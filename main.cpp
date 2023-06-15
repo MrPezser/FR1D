@@ -1,8 +1,11 @@
 #include <iostream>
 #include <cmath>
 
+#include "indexing.h"
+
 //Swap this out to change equations. If you want to compare different PDEs, you've come to the wrong place buddy.
-#define FLUX(a, b, c) AdvectionFlux(a, b, c)
+#define FACEFLUX(a, b, c) AdvectionFaceFlux(a, b, c)
+#define FLUX(a,b) AdvectionFlux(a,b)
 
 using namespace std;
 
@@ -18,7 +21,7 @@ double Initialize(double x){
     }
 }
 
-double AdvectionFlux(const double a, const double uL, const double uR) {
+double AdvectionFaceFlux(const double a, const double uL, const double uR) {
     /// Finds the upwind flux according to the 1D advection equation
     ///a = wave speed | uL & uR are the left and right state variables
     if (a > 0){
@@ -26,6 +29,13 @@ double AdvectionFlux(const double a, const double uL, const double uR) {
     } else {
         return a * uR;
     }
+}
+
+double AdvectionFlux(const double a, double u) {
+    /// Finds the flux according to the 1D advection equation
+    ///a = wave speed | u is state variable
+
+    return a * u;
 }
 
 void CalcDudt(const int nx, const double a, const double dx, const double* u, double* dudt ){
@@ -37,7 +47,7 @@ void CalcDudt(const int nx, const double a, const double dx, const double* u, do
         dudt[i] = 0;
     }
 
-
+    //Finite Volume
     //loop through faces (convention is left,-, face of element i)
     for (int iface=0; iface<nx; iface++){
         if (iface == 0) {
@@ -53,12 +63,61 @@ void CalcDudt(const int nx, const double a, const double dx, const double* u, do
         uR = u[iface];
 
         //Calculate the flux at the face
-        flux = FLUX(a, uL, uR);
+        flux = FACEFLUX(a, uL, uR);
 
         //Add the flux contribution to the RHS
         dudt[ifm1]    -= (flux / dx);
         dudt[iface]   += (flux / dx);
     }
+
+    //Flux Reconstruction (P1)
+    //find&store the common upwind fluxes at each face
+    auto common_flux = (double*)malloc(sizeof(double));
+
+    for (int iface=0; iface<nx; iface++){
+        if (iface == 0) {
+            //Periodic boundary condition
+            ifm1 = nx-1;
+        } else {
+            //Interior Cell
+            ifm1 = iface-1;
+        }
+        //Get the left and right states
+        uL = u[iup(ifm1,  1, 2)];
+        uR = u[iup(iface, 0, 2)];
+
+        //Calculate the flux at the face
+        common_flux[iface] = FACEFLUX(a, uL, uR);
+    }
+
+    //obtain the slope of the discontinuous flux function at each point
+    for (int ielem=0; ielem<nx; ielem++){
+        ///using linear 'hat' basis functions for P1
+        ///reference slope = 1/dx
+        ///Solution points = cell end points
+        double fL, fR, fxi, fcorr_x[2];
+
+        int iem1;
+        if (ielem == 0) { iem1 = nx-1; } else { iem1 = ielem-1;}
+
+        fL = FLUX(a, u[iup(ielem,0,2)]);
+        fR = FLUX(a, u[iup(ielem,1,2)]);
+
+        //flux slope (in reference element of width 2) //for p1 this is constant
+        fxi = 0.5 * (fR - fL);
+
+        //make corrections to the flux gradient using the correction function and common flux
+        //using g_corr = Radau to simulate DG, P1 requires us to use 2nd order radau
+
+        Rr2 = (1/2) * (1.5xi^2 - xi- 0.5);
+        gr_xi = 1.5xi - 0.5;
+        gl_xi = -1.5xi - 0.5;
+
+        fcorr_x[0] = fxi +
+
+    }
+
+    //free(common_flux);
 }
 
 int main() {
