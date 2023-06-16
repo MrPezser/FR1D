@@ -13,11 +13,15 @@ double Initialize(double x){
     ///This defines the intial state of the solution space
 
     //Gaussian bump and step combo
-    if (x < 0.8) {
+    if (x < 0.6) {
         double beta = 0.01;
-        return exp(-(x-0.4)*(x-0.4) / beta);
+        return 1 + exp(-(x-0.3)*(x-0.3) / beta);
     } else {
-        return 1.0;
+        if (x < 0.8) {
+            return 2.0;
+        } else {
+            return 1.0;
+        }
     }
 }
 
@@ -38,15 +42,17 @@ double AdvectionFlux(const double a, double u) {
     return a * u;
 }
 
-void CalcDudt(const int nx, const double a, const double dx, const double* u, double* dudt ){
+void CalcDudt(const int nx, const int ndegr, const double a, const double dx, const double dt, const double* u, double* dudt ){
     ///Calculates the solution update given a function to find flux
     double uL, uR, flux;
-    int ifm1;
+    int nu = ndegr * nx;
+
     //Initialize dudt
-    for (int i=0;i<nx; i++){
+    for (int i=0;i<nu; i++){
         dudt[i] = 0;
     }
 
+    /*
     //Finite Volume
     //loop through faces (convention is left,-, face of element i)
     for (int iface=0; iface<nx; iface++){
@@ -68,77 +74,85 @@ void CalcDudt(const int nx, const double a, const double dx, const double* u, do
         //Add the flux contribution to the RHS
         dudt[ifm1]    -= (flux / dx);
         dudt[iface]   += (flux / dx);
-    }
+    }*/
 
     //Flux Reconstruction (P1)
     //find&store the common upwind fluxes at each face
-    auto common_flux = (double*)malloc(sizeof(double));
+    auto common_flux = (double*)malloc(nu*sizeof(double));
 
     for (int iface=0; iface<nx; iface++){
+        int ielem, iem1;
+        ielem = iface;
         if (iface == 0) {
             //Periodic boundary condition
-            ifm1 = nx-1;
+            iem1 = nx-1;
         } else {
             //Interior Cell
-            ifm1 = iface-1;
+            iem1 = iface-1;
         }
         //Get the left and right states
-        uL = u[iup(ifm1,  1, 2)];
-        uR = u[iup(iface, 0, 2)];
+        uL = u[iup(iem1,  1, 2)];
+        uR = u[iup(ielem, 0, 2)];
 
         //Calculate the flux at the face
         common_flux[iface] = FACEFLUX(a, uL, uR);
     }
 
-    //obtain the slope of the discontinuous flux function at each point
+    //find corrected flux and calc dudt
     for (int ielem=0; ielem<nx; ielem++){
         ///using linear 'hat' basis functions for P1
         ///reference slope = 1/dx
         ///Solution points = cell end points
-        double fL, fR, fxi, fcorr_x[2];
-
-        int iem1;
-        if (ielem == 0) { iem1 = nx-1; } else { iem1 = ielem-1;}
+        double fL, fR, fxi, fcorr_xi[2];
+        int iface, ifp1;
+        iface = ielem; // left face
+        if (ielem == nx-1) {ifp1 = 0;} else {ifp1 = iface + 1;}
 
         fL = FLUX(a, u[iup(ielem,0,2)]);
         fR = FLUX(a, u[iup(ielem,1,2)]);
 
-        //flux slope (in reference element of width 2) //for p1 this is constant
+        //flux slope (in reference element of width 2) -----   for p1 this is constant
         fxi = 0.5 * (fR - fL);
 
+        /*
         //make corrections to the flux gradient using the correction function and common flux
         //using g_corr = Radau to simulate DG, P1 requires us to use 2nd order radau
+        // !!! LEFT boundary uses RIGHT radau poly !!!! and likewise
+        //Rr2 = (1/2) * (1.5xi^2 - xi- 0.5);
+        //gr_xi =  1.5xi - 0.5; = -2.0 (@xi = -1)   = 1.0   (@xi = 1)     LEFT BOUNDARY
+        //gl_xi = -1.5xi - 0.5; =  1.0 (@xi = -1)   = -2.0  (@xi = 1)     RIGHT BOUNDARY
+        //The discrete flux fxn at the left and right boundaries is on the solution points
+         */
+        fcorr_xi[0] = (fxi + (common_flux[iface] - fL)*(-2.0) + (common_flux[ifp1] - fR)*( 1.0));   //xi = -1
+        fcorr_xi[1] = (fxi + (common_flux[iface] - fL)*( 1.0) + (common_flux[ifp1] - fR)*(-2.0));   //xi =  1
 
-        Rr2 = (1/2) * (1.5xi^2 - xi- 0.5);
-        gr_xi = 1.5xi - 0.5;
-        gl_xi = -1.5xi - 0.5;
-
-        fcorr_x[0] = fxi +
-
+        dudt[iup(ielem, 0, 2)] =  -(2/dx) * fcorr_xi[0];
+        dudt[iup(ielem, 1, 2)] =  -(2/dx) * fcorr_xi[1];
     }
 
-    //free(common_flux);
+    free(common_flux);
 }
 
 int main() {
     ///hardcoded inputs
     int     nx = 100;            //Number of elements, nx+1 points
-    double  dx = 1.0 / nx;      //Implied range from x=0 to x=1
+    double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    double cfl = 0.75;          //CFL Number
+    double cfl = 0.03;          //CFL Number
     double a = 1.0;             //Wave Speed
 
     double tmax = 1.0;
-    double dt = cfl * dx / a;
-    int niter = round(tmax/dt);
+    double dt = (cfl * dx) / a;
+    int niter = ceil(tmax/dt);
 
 
-    int  ndegr = 1;             //Degrees of freedom per element
+    int  ndegr = 2;             //Degrees of freedom per element
     int nu = nx * ndegr;
 
     //Allocate Arrays
     auto* x = (double*)malloc(nx*sizeof(double));
     auto* u = (double*)malloc(nu*sizeof(double));
+    auto* u0 = (double*)malloc(nu*sizeof(double));
     auto* dudt = (double*)malloc(nu*sizeof(double));
 
     //Generate Grid (currently uniform) & initialize solution
@@ -146,26 +160,31 @@ int main() {
         //defining x position of cell centers
         x[i] = (i+0.5) * dx;
 
-        u[i] = Initialize(x[i]);
+        u[iup(i,0,ndegr)] = Initialize(x[i]-(0.5*dx));
+        u[iup(i,1,ndegr)] = Initialize(x[i]+(0.5*dx));
+        u0[iup(i,0,ndegr)] = Initialize(x[i]-(0.5*dx));
+        u0[iup(i,1,ndegr)] = Initialize(x[i]+(0.5*dx));
     }
 
     // Begin Time Marching
     for (int iter=0; iter<niter; iter++){
 
         //Explicit Euler
-        CalcDudt(nx, a, dx, u, dudt);
+        CalcDudt(nx, ndegr, a, dx, dt, u, dudt);
         for (int i=0; i<nu; i++){
             u[i] += dt * dudt[i];
         }
     }
 
+    printf("iter=%d\tdt=%f\n", niter, dt);
+
     //Printout Final Solution
-    FILE* fout = fopen("waveout.dat", "w");
-    fprintf(fout, "x\tu\n");
+    FILE* fout = fopen("waveout.tec", "w");
+    fprintf(fout, "x\tu\tu0\n");
 
     for (int i=0;i<nx;i++) {
-        fprintf(fout, "%f\t%f\n", x[i]-(0.5*dx), u[i]);
-        fprintf(fout, "%f\t%f\n", x[i]+(0.5*dx), u[i]);
+        fprintf(fout, "%f\t%f\t%f\n", x[i]-(0.5*dx), u[iup(i,0,ndegr)], u0[iup(i,0,ndegr)]);
+        fprintf(fout, "%f\t%f\t%f\n", x[i]+(0.5*dx), u[iup(i,1,ndegr)], u0[iup(i,1,ndegr)]);
     }
 
     fclose(fout);
