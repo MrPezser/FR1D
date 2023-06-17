@@ -128,6 +128,54 @@ FR1D/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/build
 .PHONY : FR1D/fast
 
+SailorMath.obj: SailorMath.cpp.obj
+.PHONY : SailorMath.obj
+
+# target to build an object file
+SailorMath.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/SailorMath.cpp.obj
+.PHONY : SailorMath.cpp.obj
+
+SailorMath.i: SailorMath.cpp.i
+.PHONY : SailorMath.i
+
+# target to preprocess a source file
+SailorMath.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/SailorMath.cpp.i
+.PHONY : SailorMath.cpp.i
+
+SailorMath.s: SailorMath.cpp.s
+.PHONY : SailorMath.s
+
+# target to generate assembly for a file
+SailorMath.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/SailorMath.cpp.s
+.PHONY : SailorMath.cpp.s
+
+basis.obj: basis.cpp.obj
+.PHONY : basis.obj
+
+# target to build an object file
+basis.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/basis.cpp.obj
+.PHONY : basis.cpp.obj
+
+basis.i: basis.cpp.i
+.PHONY : basis.i
+
+# target to preprocess a source file
+basis.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/basis.cpp.i
+.PHONY : basis.cpp.i
+
+basis.s: basis.cpp.s
+.PHONY : basis.s
+
+# target to generate assembly for a file
+basis.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/basis.cpp.s
+.PHONY : basis.cpp.s
+
 indexing.obj: indexing.cpp.obj
 .PHONY : indexing.obj
 
@@ -185,6 +233,12 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... FR1D
+	@echo ... SailorMath.obj
+	@echo ... SailorMath.i
+	@echo ... SailorMath.s
+	@echo ... basis.obj
+	@echo ... basis.i
+	@echo ... basis.s
 	@echo ... indexing.obj
 	@echo ... indexing.i
 	@echo ... indexing.s

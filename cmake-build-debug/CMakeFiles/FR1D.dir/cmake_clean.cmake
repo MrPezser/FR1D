@@ -1,4 +1,8 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/FR1D.dir/SailorMath.cpp.obj"
+  "CMakeFiles/FR1D.dir/SailorMath.cpp.obj.d"
+  "CMakeFiles/FR1D.dir/basis.cpp.obj"
+  "CMakeFiles/FR1D.dir/basis.cpp.obj.d"
   "CMakeFiles/FR1D.dir/indexing.cpp.obj"
   "CMakeFiles/FR1D.dir/indexing.cpp.obj.d"
   "CMakeFiles/FR1D.dir/main.cpp.obj"

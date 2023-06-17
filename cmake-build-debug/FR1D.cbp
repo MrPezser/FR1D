@@ -80,6 +80,18 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/SailorMath.cpp">
+			<Option target="FR1D"/>
+		</Unit>
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/SailorMath.h">
+			<Option target="FR1D"/>
+		</Unit>
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/basis.cpp">
+			<Option target="FR1D"/>
+		</Unit>
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/basis.h">
+			<Option target="FR1D"/>
+		</Unit>
 		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/indexing.cpp">
 			<Option target="FR1D"/>
 		</Unit>
