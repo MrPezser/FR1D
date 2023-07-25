@@ -3,17 +3,26 @@
 
 #include "indexing.h"
 #include "basis.h"
+#include "EulerFlux.h"
 
 //Swap this out to change equations. If you want to compare different PDEs, you've come to the wrong place buddy.
-#define FACEFLUX(a, b, c) AdvectionFaceFlux(a, b, c)
-#define FLUX(a,b) AdvectionFlux(a,b)
+#define GAM 1.4
+#define FACEFLUX(uL, uR, roeFlux) RoeFDS(GAM, uL, uR, roeFlux)  //AdvectionFaceFlux(a, b, c)
+#define FLUX(u,f)  EulerFlux(GAM, u, f)                         //AdvectionFlux(a,b)
 
 using namespace std;
+
+void veccopy(double* a, const double* b, size_t n){
+    for (int i=0; i<n; i++){
+        a[i] = b[i];
+    }
+}
 
 double Initialize(double x){
     ///This defines the intial state of the solution space
 
-    /*//Gaussian bump and step combo
+    /*
+    //Gaussian bump and step combo
     if (x < 0.6) {
         double beta = 0.01;
         return 1 + exp(-(x-0.3)*(x-0.3) / beta);
@@ -23,12 +32,33 @@ double Initialize(double x){
         } else {
             return 1.0;
         }
-    }
-     */
+    }*/
 
     //return sin(2.0*M_PI*x);
 
-    return exp(-40*(x-0.5)*(x-0.5));
+    return 1.0 + exp(-40*(x-0.5)*(x-0.5));
+}
+
+void InitializeEuler(double x, double* u){
+    double rho = 1.0;
+    double v = 1.0;
+    double p = 1.0;
+
+    //double rho = Initialize(x);
+
+    if (x < 0.5){
+        //rho = 1.0;
+        v = 0.0;
+        //p = 1.0;
+    } else {
+        rho = 0.125;
+        v = 0.0;
+        p = 0.1;
+    }
+
+    u[0] = rho;                             //rho
+    u[1] = rho * v;                         //rho V
+    u[2] = 0.5*rho*v*v + p/(GAM-1.0);       //rho e
 }
 
 double AdvectionFaceFlux(const double a, const double uL, const double uR) {
@@ -48,44 +78,29 @@ double AdvectionFlux(const double a, double u) {
     return a * u;
 }
 
-void CalcDudt(const int nx, const int ndegr, const double a, const double dx, const double* u, const double* Dmatrix, const double* Dradau, double* dudt ){
+void CalcDudt(const int nx, const int ndegr, const int nvar, const double a, const double dx, const double* u, const double* Dmatrix, const double* Dradau, double* dudt ){
     ///Calculates the solution update given a function to find flux
-    double uL, uR, flux;
-    int nu = ndegr * nx;
+    int nu = nx * ndegr * nvar;
+    double fL[nvar], fR[nvar], common_flux[nvar], fcorr_xi[nu], fxi[nvar];
+    double* flux_node[ndegr];
 
-    //Initialize dudt
-    for (int i=0;i<nu; i++){
-        dudt[i] = 0;
+    for (int inode=0; inode<ndegr; inode++){
+        flux_node[inode] = (double*)malloc(nvar*sizeof(double));
+
+        for (int kvar=0; kvar<nvar;kvar++){
+            flux_node[inode][kvar] = 0.0;
+        }
     }
 
-    /*
-    //Finite Volume
-    //loop through faces (convention is left,-, face of element i)
-    for (int iface=0; iface<nx; iface++){
-        if (iface == 0) {
-            //Periodic boundary condition
-            ifm1 = nx-1;
-        } else {
-            //Interior Cell
-            ifm1 = iface-1;
-        }
+    //Initialize dudt & corrected flux slope
+    for (int i=0;i<nu; i++){
+        dudt[i] = 0.0;
+        fcorr_xi[i] = 0.0;
+    }
 
-        //Get the left and right states
-        uL = u[ifm1];
-        uR = u[iface];
+    //Flux Reconstruction (Pn)
 
-        //Calculate the flux at the face
-        flux = FACEFLUX(a, uL, uR);
-
-        //Add the flux contribution to the RHS
-        dudt[ifm1]    -= (flux / dx);
-        dudt[iface]   += (flux / dx);
-    }*/
-
-    //Flux Reconstruction (P1)
-    //find&store the common upwind fluxes at each face
-    auto common_flux = (double*)malloc(nu*sizeof(double));
-
+    //Compute face contributions to the corrected flux gradient
     for (int iface=0; iface<nx; iface++){
         int ielem, iem1;
         ielem = iface;
@@ -96,66 +111,86 @@ void CalcDudt(const int nx, const int ndegr, const double a, const double dx, co
             //Interior Cell
             iem1 = iface-1;
         }
-        //Get the left and right states
-        uL = u[iup(iem1 , ndegr-1 , ndegr)];
-        uR = u[iup(ielem, 0       , ndegr)];
 
-        //Calculate the flux at the face
-        common_flux[iface] = FACEFLUX(a, uL, uR);
-    }
 
-    //find corrected flux and calc dudt
-    for (int ielem=0; ielem<nx; ielem++){
-        ///using linear 'hat' basis functions for P1
-        ///reference slope = 1/dx
-        ///Solution points = cell end points
-        double fL, fR, fxi[ndegr], fcorr_xi[ndegr], flux_node[ndegr];
-        int iface, ifp1;
+        //Calculate the common flux at the face
+        FACEFLUX(&u[iu3(iem1, ndegr-1, 0, ndegr)], &u[iu3(ielem, 0, 0, ndegr)], common_flux);
 
-        iface = ielem; // left face
-        if (ielem == nx-1) {ifp1 = 0;} else {ifp1 = iface + 1;}
+        //Calculate the element's local fluxes at the face
+        FLUX(&u[iu3(iem1 , ndegr-1 , 0, ndegr)], fL);
+        FLUX(&u[iu3(ielem, 0       , 0, ndegr)], fR);
 
         for (int inode=0; inode<ndegr; inode++){
-            flux_node[inode] = FLUX(a, u[iup(ielem, inode ,ndegr)]);
+            for (int kvar = 0; kvar<nvar; kvar++) {
+                fcorr_xi[iu3(iem1,  inode, kvar, ndegr)] += (common_flux[kvar] - fL[kvar]) * Dradau[ndegr - inode - 1];
+                fcorr_xi[iu3(ielem, inode, kvar, ndegr)] += (common_flux[kvar] - fR[kvar]) * Dradau[inode];
+            }
+        }
+    }
+
+    //cell-internal components and calculating dudt
+    for (int ielem=0; ielem<nx; ielem++){
+
+        for (int inode=0; inode<ndegr; inode++){
+            FLUX(&u[iu3(ielem, inode , 0, ndegr)], flux_node[inode]);
         }
 
-        fL = flux_node[0];
-        fR = flux_node[ndegr-1];
-
-        //flux slope (in reference element of width 2) -----   for p1 this is constant
-        for (int inode=0; inode<ndegr ;inode++){
+        //compute flux slope (in reference element of width 2)
+        for (int inode=0; inode<ndegr ;inode++) {
             //Use the Lagrange polynomial derivative to perform the MatVec
-            fxi[inode] = 0.0;
-            for (int jnode=0; jnode<ndegr; jnode++) {
-                fxi[inode] += flux_node[jnode] * Dmatrix[iup(inode, jnode, ndegr)];
+            for (int kvar = 0; kvar < nvar; kvar++) {
+                fxi[kvar] = 0.0;
+            }
+
+            for (int jnode = 0; jnode < ndegr; jnode++) {
+                for (int kvar = 0; kvar < nvar; kvar++) {
+                    fxi[kvar] += flux_node[jnode][kvar] * Dmatrix[iup(inode, jnode, ndegr)];
+                }
+            }
+
+            // add the interior contribution to the flux
+            for (int kvar = 0; kvar < nvar; kvar++) {
+                fcorr_xi[iu3(ielem, inode, kvar, ndegr)] += fxi[kvar];
             }
         }
 
-        for (int inode=0; inode<ndegr; inode++){
-            fcorr_xi[inode] = fxi[inode] + (common_flux[iface]-fL)*Dradau[inode] + (common_flux[ifp1]-fR)*Dradau[ndegr-inode-1];
-        }
+        for (int inode=0; inode<ndegr ;inode++) {
+            for (int kvar = 0; kvar<nvar; kvar++) {
 
-        for (int j=0; j<ndegr ;j++) {
-            dudt[iup(ielem, j, ndegr)] = -(2 / dx) * fcorr_xi[j];
+                //convert from the reference element to the real element and negate to put make it dudt
+                dudt[iu3(ielem, inode, kvar, ndegr)] = -(2 / dx) * fcorr_xi[iu3(ielem,  inode, kvar, ndegr)];
+                if (ielem == 0 || ielem == nx-1){
+                    dudt[iu3(ielem, inode, kvar, ndegr)] = 0;
+                }
+
+                if (isnan(dudt[iu3(ielem, inode, kvar, ndegr)])){
+                    throw overflow_error("dudt NAN\n");
+                }
+            }
+
         }
     }
 
-    free(common_flux);
+
+    for (int inode=0; inode<ndegr; inode++){
+        free(flux_node[inode]);
+    }
 }
 
 int main() {
     ///hardcoded inputs
-    int     nx = 10;           //Number of elements, nx+1 points
+    int     nx = 50;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int  ndegr = 4;             //Degrees of freedom per element
-    int nu = nx * ndegr;
+    int ndegr = 2;             //Degrees of freedom per element
+    int nvar = 3;               //Number of variables
+    int nu = nx * ndegr * nvar;
 
-    double cfl = 0.01 / (ndegr*ndegr);          //CFL Number
+    double cfl = 0.1 / (ndegr*ndegr);          //CFL Number
     double a = 1.0;             //Wave Speed
 
-    double tmax = 50.0;
-    double dt = (cfl * dx) / a;
+    double tmax = 0.01;
+    double dt = 0.1*(cfl * dx) / a;
     int niter = ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax
 
 
@@ -172,48 +207,55 @@ int main() {
     auto* Dradau = (double*)malloc((1+ndegr)*sizeof(double));
     GenerateRadauDerivatives(ndegr, xi, Dradau);
 
-    //for (int i=0;i<ndegr; i++){
-    //    printf("xi[%d] = %f \t Dradau[%d] = %f\n",i, xi[i], i, Dradau[i]);
-    //}
-    //return 0;
-
     //Allocate Arrays
     auto* x = (double*)malloc(nx*sizeof(double));
     auto* u = (double*)malloc(nu*sizeof(double));
     auto* u0 = (double*)malloc(nu*sizeof(double));
     auto* dudt = (double*)malloc(nu*sizeof(double));
 
-    int itype = 0; //nodal basis
-
 
     //Generate Grid (currently uniform) & initialize solution
     for (int i=0; i<nx; i++){
         //defining x position of cell centers
         x[i] = (i+0.5) * dx;
-
         for (int j=0; j<ndegr; j++) {
-            //Working Solution
-            u[iup(i, j, ndegr)]  = Initialize(x[i] + xi[j]*(0.5 * dx));
-            //Initial Solution
-            u0[iup(i, j, ndegr)] = Initialize(x[i] + xi[j]*(0.5 * dx));
+            InitializeEuler(x[i] + xi[j]*(0.5 * dx), &u[iu3(i, j, 0, ndegr)]);
         }
     }
 
+    veccopy(u0,u,nu);
 
     // Begin Time Marching
+    auto* u_tmp = (double*)malloc(nu*sizeof(double));
+
     for (int iter=0; iter<niter; iter++){
-
-        //Explicit Euler
-        CalcDudt(nx, ndegr, a, dx, u, Dmatrix, Dradau, dudt);
-
+        veccopy(u_tmp, u, nu);
+        //1st stage
+        CalcDudt(nx, ndegr, nvar, a, dx, u, Dmatrix, Dradau, dudt);
         for (int i=0; i<nu; i++){
-            u[i] += dt * dudt[i];
+            u_tmp[i] += dt * dudt[i];
+            //u[i] += dt * dudt[i];
+        }
+
+        //2nd stage
+        CalcDudt(nx, ndegr, nvar, a, dx, u_tmp, Dmatrix, Dradau, dudt);
+        for (int i=0; i<nu; i++){
+            u_tmp[i] = 0.75*u[i] + 0.25*u_tmp[i] + 0.25*dt*dudt[i];
+        }
+
+        //3rd stage
+        CalcDudt(nx, ndegr, nvar, a, dx, u_tmp, Dmatrix, Dradau, dudt);
+        for (int i=0; i<nu; i++){
+            u[i] = (1.0/3.0)*u[i] + (2.0/3.0)*u_tmp[i] + (2.0/3.0)*dt*dudt[i];
+
+
+
             if (isnan(u[i])){
                 throw overflow_error("Kaboom!\n");
             }
         }
 
-        if (iter % 50000 == 0){printf("%7.2f%% Complete\n", 100.0*(double)iter/(double)niter);}
+        if (iter % 10 == 0){printf("iter:%10d\t%7.2f%% Complete\n",iter, 100.0*(double)iter/(double)niter);}
     }
 
     printf("iter=%d\tdt=%f\n", niter, dt);
@@ -224,7 +266,9 @@ int main() {
 
     for (int i=0;i<nx;i++) {
         for (int j=0; j<ndegr; j++) {
-            fprintf(fout, "%f\t%f\t%f\n", x[i] + xi[j]*(0.5 * dx), u[iup(i,j,ndegr)], u0[iup(i,j,ndegr)]);
+            double xj = x[i] + xi[j]*(0.5 * dx);
+            fprintf(fout, "%f\t%f\t%f\t%f\t", xj , u[iu3(i,j,0,ndegr)],  u[iu3(i,j,1,ndegr)],  u[iu3(i,j,2,ndegr)]);
+            fprintf(fout, "%f\t%f\t%f\n", u0[iu3(i,j,0,ndegr)], u0[iu3(i,j,1,ndegr)], u0[iu3(i,j,2,ndegr)]);
         }
     }
 

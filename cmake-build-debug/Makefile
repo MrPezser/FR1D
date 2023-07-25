@@ -128,6 +128,30 @@ FR1D/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/build
 .PHONY : FR1D/fast
 
+EulerFlux.obj: EulerFlux.cpp.obj
+.PHONY : EulerFlux.obj
+
+# target to build an object file
+EulerFlux.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/EulerFlux.cpp.obj
+.PHONY : EulerFlux.cpp.obj
+
+EulerFlux.i: EulerFlux.cpp.i
+.PHONY : EulerFlux.i
+
+# target to preprocess a source file
+EulerFlux.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/EulerFlux.cpp.i
+.PHONY : EulerFlux.cpp.i
+
+EulerFlux.s: EulerFlux.cpp.s
+.PHONY : EulerFlux.s
+
+# target to generate assembly for a file
+EulerFlux.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/EulerFlux.cpp.s
+.PHONY : EulerFlux.cpp.s
+
 SailorMath.obj: SailorMath.cpp.obj
 .PHONY : SailorMath.obj
 
@@ -233,6 +257,9 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... FR1D
+	@echo ... EulerFlux.obj
+	@echo ... EulerFlux.i
+	@echo ... EulerFlux.s
 	@echo ... SailorMath.obj
 	@echo ... SailorMath.i
 	@echo ... SailorMath.s

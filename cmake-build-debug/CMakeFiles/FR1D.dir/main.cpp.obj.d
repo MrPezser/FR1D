@@ -102,4 +102,5 @@ CMakeFiles/FR1D.dir/main.cpp.obj: \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\bits\istream.tcc \
  c:\mingw\lib\gcc\mingw32\6.3.0\include\c++\cmath c:\mingw\include\math.h \
  C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\indexing.h \
- C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\basis.h
+ C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\basis.h \
+ C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\EulerFlux.h
