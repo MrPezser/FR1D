@@ -7,7 +7,7 @@
 
 //Swap this out to change equations. If you want to compare different PDEs, you've come to the wrong place buddy.
 #define GAM 1.4
-#define FACEFLUX(a, b, c) LeerFlux(GAM, a, b, c) //AdvectionFaceFlux(a, b, c)
+#define FACEFLUX(a, b, c) RoeFDS(GAM, a, b, c) //AdvectionFaceFlux(a, b, c)
 #define FLUX(a,b)  EulerFlux(GAM, a, b) //AdvectionFlux(a, b)
 
 using namespace std;
@@ -34,7 +34,7 @@ double Initialize(double x){
         }
     }*/
 
-    //return sin(2.0*M_PI*x);
+    //return 2.0 + sin(2.0*M_PI*x);
 
     return 1.0 + exp(-40*(x-0.5)*(x-0.5));
 }
@@ -101,32 +101,32 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double a, con
 
     //Compute face contributions to the corrected flux gradient
     for (int iface=0; iface<nx; iface++){
-        int ielem, iem1;
+        int ielem, iep1;
         ielem = iface;
-        if (iface == 0) {
+        if (iface == nx-1) {
             //Periodic boundary condition
-            iem1 = nx-1;
+            iep1 = 0;
         } else {
             //Interior Cell
-            iem1 = iface-1;
+            iep1 = iface+1;
         }
 
 
         //Calculate the common flux at the face
-        FACEFLUX(&u[iu3(iem1, ndegr-1, 0, ndegr)], &u[iu3(ielem, 0, 0, ndegr)], common_flux);
+        FACEFLUX(&u[iu3(ielem, ndegr-1, 0, ndegr)], &u[iu3(iep1, 0, 0, ndegr)], common_flux);
         //common_flux[0] = FACEFLUX(a, u[iu3(iem1, ndegr-1, 0, ndegr)], u[iu3(ielem, 0, 0, ndegr)]);
 
         //Calculate the element's local fluxes at the face
-        FLUX(&u[iu3(iem1 , ndegr-1 , 0, ndegr)], fL);
-        FLUX(&u[iu3(ielem, 0       , 0, ndegr)], fR);
+        FLUX(&u[iu3(ielem , ndegr-1 , 0, ndegr)], &fL[0]);
+        FLUX(&u[iu3(iep1, 0       , 0, ndegr)], &fR[0]);
         //fL[0] = FLUX(a, u[iu3(iem1, ndegr-1, 0, ndegr)]);
         //fR[0] = FLUX(a, u[iu3(ielem, 0, 0, ndegr)]);
 
 
         for (int inode=0; inode<ndegr; inode++){
             for (int kvar = 0; kvar<nvar; kvar++) {
-                fcorr_xi[iu3(iem1,  inode, kvar, ndegr)] += (common_flux[kvar] - fL[kvar]) * Dradau[ndegr - inode - 1];
-                fcorr_xi[iu3(ielem, inode, kvar, ndegr)] += (common_flux[kvar] - fR[kvar]) * Dradau[inode];
+                fcorr_xi[iu3(ielem,ndegr-1-inode, kvar, ndegr)] -= (common_flux[kvar] - fL[kvar]) * Dradau[inode];   //ndegr-1-
+                fcorr_xi[iu3(iep1, inode        , kvar, ndegr)] += (common_flux[kvar] - fR[kvar]) * Dradau[inode];
             }
         }
     }
@@ -135,8 +135,13 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double a, con
     for (int ielem=0; ielem<nx; ielem++){
 
         for (int inode=0; inode<ndegr; inode++){
-            FLUX(&u[iu3(ielem, inode , 0, ndegr)], &flux_node[iup(inode, 0, nvar)]);
+            double flux[3];
+            FLUX(&u[iu3(ielem, inode , 0, ndegr)], &flux[0]);
             //flux_node[inode][0] = FLUX(a, u[iu3(ielem, inode , 0, ndegr)]);
+
+            flux_node[iup(inode, 0, nvar)] = flux[0];
+            flux_node[iup(inode, 1, nvar)] = flux[1];
+            flux_node[iup(inode, 2, nvar)] = flux[2];
         }
 
         //compute discontinuous flux slope (in reference element of width 2)
@@ -147,6 +152,7 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double a, con
 
             //Use the Lagrange polynomial derivative matrix to perform the MatVec -> interior contribution to flux slope
             for (int jnode = 0; jnode < ndegr; jnode++) {
+                //if (jnode == inode) continue;
                 for (int kvar = 0; kvar < nvar; kvar++) {
                     fxi[kvar] += flux_node[iup(jnode, kvar, nvar)] * Dmatrix[iup(inode, jnode, ndegr)];
                 }
@@ -164,7 +170,7 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double a, con
                 //convert from the reference element to the real element and negate to put make it dudt (= -f_x)
                 dudt[iu3(ielem, inode, kvar, ndegr)] = -fcorr_xi[iu3(ielem,  inode, kvar, ndegr)] * (2/ dx);
 
-                 //Uncomment to fix end ponts for shock-tube like problem
+                 //fix end points for shock-tube like problem
                 if (ielem == 0 || ielem == nx-1){
                     dudt[iu3(ielem, inode, kvar, ndegr)] = 0;
                 }
@@ -184,14 +190,14 @@ int main() {
     int     nx = 50;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int ndegr = 1;             //Degrees of freedom per element
+    int ndegr = 2;             //Degrees of freedom per element
     int nvar = 3;               //Number of variables
     int nu = nx * ndegr * nvar;
 
     double cfl = 0.01 / (ndegr*ndegr);          //CFL Number
     double a = 1.0;             //Wave Speed
 
-    double tmax = 0.01;
+    double tmax = 0.1;
     double dt = (cfl * dx) / a;
     int niter = ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax
 
@@ -256,7 +262,7 @@ int main() {
             u[i] = (1.0/3.0)*u[i] + (2.0/3.0)*(u_tmp[i] + dt*dudt[i]);
         }*/
 
-        if (iter % 10 == 0){printf("iter:%10d\t%7.2f%% Complete\n",iter, 100.0*(double)iter/(double)niter);}
+        if (iter % 100 == 0){printf("iter:%10d\t%7.2f%% Complete\n",iter, 100.0*(double)iter/(double)niter);}
     }
 
     printf("iter=%d\tdt=%f\n", niter, dt);
@@ -269,7 +275,11 @@ int main() {
         for (int j=0; j<ndegr; j++) {
             double xj = x[i] + xi[j]*(0.5 * dx);
             fprintf(fout, "%f\t%f\t%f\t%f\t", xj , u[iu3(i,j,0,ndegr)],  u[iu3(i,j,1,ndegr)],  u[iu3(i,j,2,ndegr)]);
-            fprintf(fout, "%f\t%f\t%f\n", u0[iu3(i,j,0,ndegr)], u0[iu3(i,j,1,ndegr)], u0[iu3(i,j,2,ndegr)]);
+
+            double rho, v, p, c, M;
+            getPrimativesPN(GAM , &u[iu3(i,j,0,ndegr)], &rho, &v, &p, &c, &M);
+
+            fprintf(fout, "%f\t%f\t%f\n", p, c, M);
             //fprintf(fout, "%f\t%f\t", xj , u[iu3(i,j,0,ndegr)]);
             //fprintf(fout, "%f\n", u0[iu3(i,j,0,ndegr)]);
         }
