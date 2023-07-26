@@ -19,6 +19,8 @@ double EvalLobatto(int numPoints, double x){
     //This finds the value of the jth order lobatto polynomial at the given points (i.e. the value we want to =0)
     //method is that Lo_k(x) = P_legendre_k(x) - P_l_k-2(x)
 
+    if (numPoints == 1){return 1.0;}
+
     for (int j = 2; j <= numPoints; ++j) {
         p2 = ((2.0 * j - 1.0) * x * p1 - (j - 1.0) * p0) / j;
         if (j == numPoints){
@@ -35,15 +37,16 @@ double EvalLobatto(int numPoints, double x){
 void GenerateLobattoPoints(int numPoints, double* points){
     int isign;
     double x;
-    double dxi = 1e-7;
-    double pointMinSep = 1e-4;
+    double dxi = 1e-8;
+    double pointMinSep = 1e-5;
     double x0 = -1.0+pointMinSep;
-    double tolerance = 1e-8;
+    double tolerance = 1e-10;
     int maxIterations = 100;
     int outmaxIter = ceil(2.0 / pointMinSep);
 
     // Number of points should be at least 2
     if (numPoints < 2) {
+        points[0] = 0.0;
         return;
     }
 

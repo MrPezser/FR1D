@@ -28,7 +28,7 @@ void getPrimativesPN(const double gam, const double *unkel, double *rho, double 
     p[0] = fmax(1e-8, p[0]);
 
     c[0] = sqrt(gam * p[0] / fmax(1e-8, rho[0]));
-    M[0] = sqrt(v2) / c[0];
+    M[0] = v[0] / c[0];
 
     if (isnan(M[0])) {throw overflow_error("Nonpositive Density\n");}
 }
@@ -148,7 +148,7 @@ double F1pm(const int isPlus, const double M, const double rho, const double c){
     if (isPlus==0) {
         if (M <= -1.0) {
             //F1-
-            return -rho * M * c;
+            return rho * M * c;// *-1
         }
         if (M >= 1.0) {
             return 0.0;
@@ -173,6 +173,19 @@ void LeerFlux(double gam, const double* uL, const double* uR, double *flux){
     getPrimativesPN(gam, uR, &rhoR, &vR, &pR, &cR, &MR);
 
 
+    if (ML >= 1.0){
+        EulerFlux(gam, uL, flux);
+        return;
+    }
+
+    if (MR <= -1.0){
+        EulerFlux(gam, uR, flux);
+        return;
+    }
+
+    double Mp =  0.25 * (ML + 1) * (ML + 1);
+    double Mm = -0.25 * (MR - 1) + (MR - 1);
+
     F1L = F1pm(1, ML, rhoL, cL);
     F1R = F1pm(0, MR, rhoR, cR);
 
@@ -181,13 +194,13 @@ void LeerFlux(double gam, const double* uL, const double* uR, double *flux){
     }
 
     fPlus[0] = F1L;
-    double A = ((gam - 1) * vL) + (2.0 * cL);
+    double A = ((gam - 1) * ML*cL) + (2.0 * cL); //vL
     fPlus[1] = F1L * A / gam;
     fPlus[2] = F1L * A*A * 0.5 / (gam*gam - 1.0);
 
 
     fMins[0] = F1R;
-    A = ((gam - 1) * vR) - (2.0 * cR);
+    A = -((gam - 1) * MR*cR) - (2.0 * cR); //vR
     fMins[1] = F1R * A / gam;
     fMins[2] = F1R * A*A * 0.5 / (gam*gam - 1.0);
 
