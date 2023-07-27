@@ -56,10 +56,10 @@ RM = "C:\Program Files\JetBrains\CLion 2023.1.3\bin\cmake\win\x64\bin\cmake.exe"
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\Users\tskoepli\Documents\GitHub\FR1D
+CMAKE_SOURCE_DIR = C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug
+CMAKE_BINARY_DIR = C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -86,9 +86,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug\CMakeFiles C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug\\CMakeFiles\progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug\CMakeFiles C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug\\CMakeFiles\progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug\CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug\CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -175,6 +175,30 @@ SailorMath.s: SailorMath.cpp.s
 SailorMath.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/SailorMath.cpp.s
 .PHONY : SailorMath.cpp.s
+
+SpatialDiscretization.obj: SpatialDiscretization.cpp.obj
+.PHONY : SpatialDiscretization.obj
+
+# target to build an object file
+SpatialDiscretization.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj
+.PHONY : SpatialDiscretization.cpp.obj
+
+SpatialDiscretization.i: SpatialDiscretization.cpp.i
+.PHONY : SpatialDiscretization.i
+
+# target to preprocess a source file
+SpatialDiscretization.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.i
+.PHONY : SpatialDiscretization.cpp.i
+
+SpatialDiscretization.s: SpatialDiscretization.cpp.s
+.PHONY : SpatialDiscretization.s
+
+# target to generate assembly for a file
+SpatialDiscretization.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\FR1D.dir\build.make CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.s
+.PHONY : SpatialDiscretization.cpp.s
 
 basis.obj: basis.cpp.obj
 .PHONY : basis.obj
@@ -263,6 +287,9 @@ help:
 	@echo ... SailorMath.obj
 	@echo ... SailorMath.i
 	@echo ... SailorMath.s
+	@echo ... SpatialDiscretization.obj
+	@echo ... SpatialDiscretization.i
+	@echo ... SpatialDiscretization.s
 	@echo ... basis.obj
 	@echo ... basis.i
 	@echo ... basis.s

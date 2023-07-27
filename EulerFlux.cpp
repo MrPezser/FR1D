@@ -183,9 +183,6 @@ void LeerFlux(double gam, const double* uL, const double* uR, double *flux){
         return;
     }
 
-    double Mp =  0.25 * (ML + 1) * (ML + 1);
-    double Mm = -0.25 * (MR - 1) + (MR - 1);
-
     F1L = F1pm(1, ML, rhoL, cL);
     F1R = F1pm(0, MR, rhoR, cR);
 
@@ -194,13 +191,13 @@ void LeerFlux(double gam, const double* uL, const double* uR, double *flux){
     }
 
     fPlus[0] = F1L;
-    double A = ((gam - 1) * ML*cL) + (2.0 * cL); //vL
+    double A = ((gam - 1) * vL) + (2.0 * cL); //vL
     fPlus[1] = F1L * A / gam;
     fPlus[2] = F1L * A*A * 0.5 / (gam*gam - 1.0);
 
 
     fMins[0] = F1R;
-    A = -((gam - 1) * MR*cR) - (2.0 * cR); //vR
+    A = -((gam - 1) * vL) - (2.0 * cR); //vR
     fMins[1] = F1R * A / gam;
     fMins[2] = F1R * A*A * 0.5 / (gam*gam - 1.0);
 

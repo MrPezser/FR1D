@@ -4,11 +4,9 @@
 #include "indexing.h"
 #include "basis.h"
 #include "EulerFlux.h"
+#include "SpatialDiscretization.h"
 
-//Swap this out to change equations. If you want to compare different PDEs, you've come to the wrong place buddy.
-#define GAM 1.4
-#define FACEFLUX(a, b, c) RoeFDS(GAM, a, b, c) //AdvectionFaceFlux(a, b, c)
-#define FLUX(a,b)  EulerFlux(GAM, a, b) //AdvectionFlux(a, b)
+
 
 using namespace std;
 
@@ -21,7 +19,7 @@ void veccopy(double* a, const double* b, size_t n){
 double Initialize(double x){
     ///This defines the intial state of the solution space
 
-    /*
+
     //Gaussian bump and step combo
     if (x < 0.6) {
         double beta = 0.01;
@@ -32,11 +30,11 @@ double Initialize(double x){
         } else {
             return 1.0;
         }
-    }*/
+    }
 
     //return 2.0 + sin(2.0*M_PI*x);
 
-    return 1.0 + exp(-40*(x-0.5)*(x-0.5));
+    //return 1.0 + exp(-40*(x-0.5)*(x-0.5));
 }
 
 void InitializeEuler(double x, double* u){
@@ -78,126 +76,19 @@ double AdvectionFlux(const double a, double u) {
     return a * u;
 }
 
-void CalcDudt(const int nx, const int ndegr, const int nvar, const double a, const double dx, const double* u, const double* Dmatrix, const double* Dradau, double* dudt ){
-    ///Calculates the solution update given a function to find flux
-    int nu = nx * ndegr * nvar;
-    int np = ndegr * nvar;
-    double fL[nvar], fR[nvar], common_flux[nvar], fcorr_xi[nu], fxi[nvar];
-    double flux_node[np];
-
-    for (int inode=0; inode<ndegr; inode++){
-        for (int kvar=0; kvar<nvar;kvar++){
-            flux_node[iup(inode, kvar, nvar)] = 0.0;
-        }
-    }
-
-    //Initialize dudt & corrected flux slope
-    for (int i=0;i<nu; i++){
-        dudt[i] = 0.0;
-        fcorr_xi[i] = 0.0;
-    }
-
-    //Flux Reconstruction (Pn)
-
-    //Compute face contributions to the corrected flux gradient
-    for (int iface=0; iface<nx; iface++){
-        int ielem, iep1;
-        ielem = iface;
-        if (iface == nx-1) {
-            //Periodic boundary condition
-            iep1 = 0;
-        } else {
-            //Interior Cell
-            iep1 = iface+1;
-        }
-
-
-        //Calculate the common flux at the face
-        FACEFLUX(&u[iu3(ielem, ndegr-1, 0, ndegr)], &u[iu3(iep1, 0, 0, ndegr)], common_flux);
-        //common_flux[0] = FACEFLUX(a, u[iu3(iem1, ndegr-1, 0, ndegr)], u[iu3(ielem, 0, 0, ndegr)]);
-
-        //Calculate the element's local fluxes at the face
-        FLUX(&u[iu3(ielem , ndegr-1 , 0, ndegr)], &fL[0]);
-        FLUX(&u[iu3(iep1, 0       , 0, ndegr)], &fR[0]);
-        //fL[0] = FLUX(a, u[iu3(iem1, ndegr-1, 0, ndegr)]);
-        //fR[0] = FLUX(a, u[iu3(ielem, 0, 0, ndegr)]);
-
-
-        for (int inode=0; inode<ndegr; inode++){
-            for (int kvar = 0; kvar<nvar; kvar++) {
-                fcorr_xi[iu3(ielem,ndegr-1-inode, kvar, ndegr)] -= (common_flux[kvar] - fL[kvar]) * Dradau[inode];   //ndegr-1-
-                fcorr_xi[iu3(iep1, inode        , kvar, ndegr)] += (common_flux[kvar] - fR[kvar]) * Dradau[inode];
-            }
-        }
-    }
-
-    //cell-internal components and calculating dudt
-    for (int ielem=0; ielem<nx; ielem++){
-
-        for (int inode=0; inode<ndegr; inode++){
-            double flux[3];
-            FLUX(&u[iu3(ielem, inode , 0, ndegr)], &flux[0]);
-            //flux_node[inode][0] = FLUX(a, u[iu3(ielem, inode , 0, ndegr)]);
-
-            flux_node[iup(inode, 0, nvar)] = flux[0];
-            flux_node[iup(inode, 1, nvar)] = flux[1];
-            flux_node[iup(inode, 2, nvar)] = flux[2];
-        }
-
-        //compute discontinuous flux slope (in reference element of width 2)
-        for (int inode=0; inode<ndegr ;inode++) {
-            for (int kvar = 0; kvar < nvar; kvar++) {
-                fxi[kvar] = 0.0;
-            }
-
-            //Use the Lagrange polynomial derivative matrix to perform the MatVec -> interior contribution to flux slope
-            for (int jnode = 0; jnode < ndegr; jnode++) {
-                //if (jnode == inode) continue;
-                for (int kvar = 0; kvar < nvar; kvar++) {
-                    fxi[kvar] += flux_node[iup(jnode, kvar, nvar)] * Dmatrix[iup(inode, jnode, ndegr)];
-                }
-            }
-
-            // add the interior contribution to the flux slope
-            for (int kvar = 0; kvar < nvar; kvar++) {
-                fcorr_xi[iu3(ielem, inode, kvar, ndegr)] += fxi[kvar];
-            }
-        }
-
-        for (int inode=0; inode<ndegr ;inode++) {
-            for (int kvar = 0; kvar<nvar; kvar++) {
-
-                //convert from the reference element to the real element and negate to put make it dudt (= -f_x)
-                dudt[iu3(ielem, inode, kvar, ndegr)] = -fcorr_xi[iu3(ielem,  inode, kvar, ndegr)] * (2/ dx);
-
-                 //fix end points for shock-tube like problem
-                if (ielem == 0 || ielem == nx-1){
-                    dudt[iu3(ielem, inode, kvar, ndegr)] = 0;
-                }
-
-                if (isnan(dudt[iu3(ielem, inode, kvar, ndegr)])){
-                    throw overflow_error("dudt NAN\n");
-                }
-            }
-
-        }
-    }
-
-}
-
 int main() {
     ///hardcoded inputs
-    int     nx = 50;           //Number of elements, nx+1 points
+    int     nx = 100;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int ndegr = 2;             //Degrees of freedom per element
+    int ndegr = 4;             //Degrees of freedom per element
     int nvar = 3;               //Number of variables
     int nu = nx * ndegr * nvar;
 
     double cfl = 0.01 / (ndegr*ndegr);          //CFL Number
     double a = 1.0;             //Wave Speed
 
-    double tmax = 0.1;
+    double tmax = 0.2;
     double dt = (cfl * dx) / a;
     int niter = ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax
 

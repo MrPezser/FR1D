@@ -52,10 +52,10 @@ RM = "C:\Program Files\JetBrains\CLion 2023.1.3\bin\cmake\win\x64\bin\cmake.exe"
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\Users\tskoepli\Documents\GitHub\FR1D
+CMAKE_SOURCE_DIR = C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug
+CMAKE_BINARY_DIR = C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/FR1D.dir/depend.make
@@ -69,74 +69,88 @@ include CMakeFiles/FR1D.dir/progress.make
 include CMakeFiles/FR1D.dir/flags.make
 
 CMakeFiles/FR1D.dir/main.cpp.obj: CMakeFiles/FR1D.dir/flags.make
-CMakeFiles/FR1D.dir/main.cpp.obj: C:/Users/tskoepli/Documents/GitHub/FR1D/main.cpp
+CMakeFiles/FR1D.dir/main.cpp.obj: C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/main.cpp
 CMakeFiles/FR1D.dir/main.cpp.obj: CMakeFiles/FR1D.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/FR1D.dir/main.cpp.obj"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FR1D.dir/main.cpp.obj -MF CMakeFiles\FR1D.dir\main.cpp.obj.d -o CMakeFiles\FR1D.dir\main.cpp.obj -c C:\Users\tskoepli\Documents\GitHub\FR1D\main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/FR1D.dir/main.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FR1D.dir/main.cpp.obj -MF CMakeFiles\FR1D.dir\main.cpp.obj.d -o CMakeFiles\FR1D.dir\main.cpp.obj -c C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\main.cpp
 
 CMakeFiles/FR1D.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/FR1D.dir/main.cpp.i"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\tskoepli\Documents\GitHub\FR1D\main.cpp > CMakeFiles\FR1D.dir\main.cpp.i
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\main.cpp > CMakeFiles\FR1D.dir\main.cpp.i
 
 CMakeFiles/FR1D.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/FR1D.dir/main.cpp.s"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\tskoepli\Documents\GitHub\FR1D\main.cpp -o CMakeFiles\FR1D.dir\main.cpp.s
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\main.cpp -o CMakeFiles\FR1D.dir\main.cpp.s
 
 CMakeFiles/FR1D.dir/indexing.cpp.obj: CMakeFiles/FR1D.dir/flags.make
-CMakeFiles/FR1D.dir/indexing.cpp.obj: C:/Users/tskoepli/Documents/GitHub/FR1D/indexing.cpp
+CMakeFiles/FR1D.dir/indexing.cpp.obj: C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/indexing.cpp
 CMakeFiles/FR1D.dir/indexing.cpp.obj: CMakeFiles/FR1D.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/FR1D.dir/indexing.cpp.obj"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FR1D.dir/indexing.cpp.obj -MF CMakeFiles\FR1D.dir\indexing.cpp.obj.d -o CMakeFiles\FR1D.dir\indexing.cpp.obj -c C:\Users\tskoepli\Documents\GitHub\FR1D\indexing.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/FR1D.dir/indexing.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FR1D.dir/indexing.cpp.obj -MF CMakeFiles\FR1D.dir\indexing.cpp.obj.d -o CMakeFiles\FR1D.dir\indexing.cpp.obj -c C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\indexing.cpp
 
 CMakeFiles/FR1D.dir/indexing.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/FR1D.dir/indexing.cpp.i"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\tskoepli\Documents\GitHub\FR1D\indexing.cpp > CMakeFiles\FR1D.dir\indexing.cpp.i
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\indexing.cpp > CMakeFiles\FR1D.dir\indexing.cpp.i
 
 CMakeFiles/FR1D.dir/indexing.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/FR1D.dir/indexing.cpp.s"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\tskoepli\Documents\GitHub\FR1D\indexing.cpp -o CMakeFiles\FR1D.dir\indexing.cpp.s
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\indexing.cpp -o CMakeFiles\FR1D.dir\indexing.cpp.s
 
 CMakeFiles/FR1D.dir/basis.cpp.obj: CMakeFiles/FR1D.dir/flags.make
-CMakeFiles/FR1D.dir/basis.cpp.obj: C:/Users/tskoepli/Documents/GitHub/FR1D/basis.cpp
+CMakeFiles/FR1D.dir/basis.cpp.obj: C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/basis.cpp
 CMakeFiles/FR1D.dir/basis.cpp.obj: CMakeFiles/FR1D.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/FR1D.dir/basis.cpp.obj"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FR1D.dir/basis.cpp.obj -MF CMakeFiles\FR1D.dir\basis.cpp.obj.d -o CMakeFiles\FR1D.dir\basis.cpp.obj -c C:\Users\tskoepli\Documents\GitHub\FR1D\basis.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/FR1D.dir/basis.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FR1D.dir/basis.cpp.obj -MF CMakeFiles\FR1D.dir\basis.cpp.obj.d -o CMakeFiles\FR1D.dir\basis.cpp.obj -c C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\basis.cpp
 
 CMakeFiles/FR1D.dir/basis.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/FR1D.dir/basis.cpp.i"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\tskoepli\Documents\GitHub\FR1D\basis.cpp > CMakeFiles\FR1D.dir\basis.cpp.i
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\basis.cpp > CMakeFiles\FR1D.dir\basis.cpp.i
 
 CMakeFiles/FR1D.dir/basis.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/FR1D.dir/basis.cpp.s"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\tskoepli\Documents\GitHub\FR1D\basis.cpp -o CMakeFiles\FR1D.dir\basis.cpp.s
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\basis.cpp -o CMakeFiles\FR1D.dir\basis.cpp.s
 
 CMakeFiles/FR1D.dir/SailorMath.cpp.obj: CMakeFiles/FR1D.dir/flags.make
-CMakeFiles/FR1D.dir/SailorMath.cpp.obj: C:/Users/tskoepli/Documents/GitHub/FR1D/SailorMath.cpp
+CMakeFiles/FR1D.dir/SailorMath.cpp.obj: C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/SailorMath.cpp
 CMakeFiles/FR1D.dir/SailorMath.cpp.obj: CMakeFiles/FR1D.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/FR1D.dir/SailorMath.cpp.obj"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FR1D.dir/SailorMath.cpp.obj -MF CMakeFiles\FR1D.dir\SailorMath.cpp.obj.d -o CMakeFiles\FR1D.dir\SailorMath.cpp.obj -c C:\Users\tskoepli\Documents\GitHub\FR1D\SailorMath.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/FR1D.dir/SailorMath.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FR1D.dir/SailorMath.cpp.obj -MF CMakeFiles\FR1D.dir\SailorMath.cpp.obj.d -o CMakeFiles\FR1D.dir\SailorMath.cpp.obj -c C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\SailorMath.cpp
 
 CMakeFiles/FR1D.dir/SailorMath.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/FR1D.dir/SailorMath.cpp.i"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\tskoepli\Documents\GitHub\FR1D\SailorMath.cpp > CMakeFiles\FR1D.dir\SailorMath.cpp.i
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\SailorMath.cpp > CMakeFiles\FR1D.dir\SailorMath.cpp.i
 
 CMakeFiles/FR1D.dir/SailorMath.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/FR1D.dir/SailorMath.cpp.s"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\tskoepli\Documents\GitHub\FR1D\SailorMath.cpp -o CMakeFiles\FR1D.dir\SailorMath.cpp.s
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\SailorMath.cpp -o CMakeFiles\FR1D.dir\SailorMath.cpp.s
 
 CMakeFiles/FR1D.dir/EulerFlux.cpp.obj: CMakeFiles/FR1D.dir/flags.make
-CMakeFiles/FR1D.dir/EulerFlux.cpp.obj: C:/Users/tskoepli/Documents/GitHub/FR1D/EulerFlux.cpp
+CMakeFiles/FR1D.dir/EulerFlux.cpp.obj: C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/EulerFlux.cpp
 CMakeFiles/FR1D.dir/EulerFlux.cpp.obj: CMakeFiles/FR1D.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/FR1D.dir/EulerFlux.cpp.obj"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FR1D.dir/EulerFlux.cpp.obj -MF CMakeFiles\FR1D.dir\EulerFlux.cpp.obj.d -o CMakeFiles\FR1D.dir\EulerFlux.cpp.obj -c C:\Users\tskoepli\Documents\GitHub\FR1D\EulerFlux.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/FR1D.dir/EulerFlux.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FR1D.dir/EulerFlux.cpp.obj -MF CMakeFiles\FR1D.dir\EulerFlux.cpp.obj.d -o CMakeFiles\FR1D.dir\EulerFlux.cpp.obj -c C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\EulerFlux.cpp
 
 CMakeFiles/FR1D.dir/EulerFlux.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/FR1D.dir/EulerFlux.cpp.i"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\tskoepli\Documents\GitHub\FR1D\EulerFlux.cpp > CMakeFiles\FR1D.dir\EulerFlux.cpp.i
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\EulerFlux.cpp > CMakeFiles\FR1D.dir\EulerFlux.cpp.i
 
 CMakeFiles/FR1D.dir/EulerFlux.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/FR1D.dir/EulerFlux.cpp.s"
-	C:\PROGRA~1\JETBRA~1\CLION2~1.3\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\tskoepli\Documents\GitHub\FR1D\EulerFlux.cpp -o CMakeFiles\FR1D.dir\EulerFlux.cpp.s
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\EulerFlux.cpp -o CMakeFiles\FR1D.dir\EulerFlux.cpp.s
+
+CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj: CMakeFiles/FR1D.dir/flags.make
+CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj: C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/SpatialDiscretization.cpp
+CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj: CMakeFiles/FR1D.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj -MF CMakeFiles\FR1D.dir\SpatialDiscretization.cpp.obj.d -o CMakeFiles\FR1D.dir\SpatialDiscretization.cpp.obj -c C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\SpatialDiscretization.cpp
+
+CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.i"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\SpatialDiscretization.cpp > CMakeFiles\FR1D.dir\SpatialDiscretization.cpp.i
+
+CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.s"
+	C:\MinGW\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\SpatialDiscretization.cpp -o CMakeFiles\FR1D.dir\SpatialDiscretization.cpp.s
 
 # Object files for target FR1D
 FR1D_OBJECTS = \
@@ -144,7 +158,8 @@ FR1D_OBJECTS = \
 "CMakeFiles/FR1D.dir/indexing.cpp.obj" \
 "CMakeFiles/FR1D.dir/basis.cpp.obj" \
 "CMakeFiles/FR1D.dir/SailorMath.cpp.obj" \
-"CMakeFiles/FR1D.dir/EulerFlux.cpp.obj"
+"CMakeFiles/FR1D.dir/EulerFlux.cpp.obj" \
+"CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj"
 
 # External object files for target FR1D
 FR1D_EXTERNAL_OBJECTS =
@@ -154,11 +169,12 @@ FR1D.exe: CMakeFiles/FR1D.dir/indexing.cpp.obj
 FR1D.exe: CMakeFiles/FR1D.dir/basis.cpp.obj
 FR1D.exe: CMakeFiles/FR1D.dir/SailorMath.cpp.obj
 FR1D.exe: CMakeFiles/FR1D.dir/EulerFlux.cpp.obj
+FR1D.exe: CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj
 FR1D.exe: CMakeFiles/FR1D.dir/build.make
 FR1D.exe: CMakeFiles/FR1D.dir/linkLibs.rsp
 FR1D.exe: CMakeFiles/FR1D.dir/objects1
 FR1D.exe: CMakeFiles/FR1D.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable FR1D.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable FR1D.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\FR1D.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -170,6 +186,6 @@ CMakeFiles/FR1D.dir/clean:
 .PHONY : CMakeFiles/FR1D.dir/clean
 
 CMakeFiles/FR1D.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\tskoepli\Documents\GitHub\FR1D C:\Users\tskoepli\Documents\GitHub\FR1D C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug C:\Users\tskoepli\Documents\GitHub\FR1D\cmake-build-debug\CMakeFiles\FR1D.dir\DependInfo.cmake --color=$(COLOR)
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug C:\Users\Tsail\OneDrive\Documents\Projects\CFD\1D_PDE\FR1D\cmake-build-debug\CMakeFiles\FR1D.dir\DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/FR1D.dir/depend
 
