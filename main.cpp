@@ -78,7 +78,7 @@ double AdvectionFlux(const double a, double u) {
 
 int main() {
     ///hardcoded inputs
-    int     nx = 100;           //Number of elements, nx+1 points
+    int     nx = 25;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
     int ndegr = 4;             //Degrees of freedom per element
