@@ -8,8 +8,8 @@
 
 //Swap this out to change equations. If you want to compare different PDEs, you've come to the wrong place buddy.
 #define GAM 1.4
-#define FACEFLUX(a, b, c) RoeFDS(GAM, a, b, c) //AdvectionFaceFlux(a, b, c)
-#define FLUX(a,b)  EulerFlux(GAM, a, b) //AdvectionFlux(a, b)
+#define FACEFLUX(a, b, c) AdvectionFaceFlux(a, b, c) //RoeFDS(GAM, a, b, c)
+#define FLUX(a,b)  AdvectionFlux(a, b) // EulerFlux(GAM, a, b)
 
 #ifndef FR1D_SPATIALDISCRETIZATION_H
 #define FR1D_SPATIALDISCRETIZATION_H
