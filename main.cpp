@@ -45,9 +45,9 @@ void InitializeEuler(double x, double* u){
     //rho = Initialize(x);
 
     if (x < 0.5){
-        //rho = 1.0;
+        rho = 1.0;
         v = 0.0;
-        //p = 1.0;
+        p = 1.0;
     } else {
         rho = 0.125;
         v = 0.0;
@@ -78,17 +78,17 @@ double AdvectionFlux(const double a, double u) {
 
 int main() {
     ///hardcoded inputs
-    int     nx = 25;           //Number of elements, nx+1 points
+    int     nx = 100;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int ndegr = 4;             //Degrees of freedom per element
+    int ndegr = 26;             //Degrees of freedom per element
     int nvar = 3;               //Number of variables
     int nu = nx * ndegr * nvar;
 
     double cfl = 0.01 / (ndegr*ndegr);          //CFL Number
     double a = 1.0;             //Wave Speed
 
-    double tmax = 0.2;
+    double tmax = 0.1;
     double dt = (cfl * dx) / a;
     int niter = ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax
 

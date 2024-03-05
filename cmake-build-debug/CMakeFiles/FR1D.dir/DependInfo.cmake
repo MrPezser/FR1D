@@ -8,12 +8,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "C:/Users/tskoepli/Documents/GitHub/FR1D/EulerFlux.cpp" "CMakeFiles/FR1D.dir/EulerFlux.cpp.obj" "gcc" "CMakeFiles/FR1D.dir/EulerFlux.cpp.obj.d"
-  "C:/Users/tskoepli/Documents/GitHub/FR1D/SailorMath.cpp" "CMakeFiles/FR1D.dir/SailorMath.cpp.obj" "gcc" "CMakeFiles/FR1D.dir/SailorMath.cpp.obj.d"
-  "C:/Users/tskoepli/Documents/GitHub/FR1D/SpatialDiscretization.cpp" "CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj" "gcc" "CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj.d"
-  "C:/Users/tskoepli/Documents/GitHub/FR1D/basis.cpp" "CMakeFiles/FR1D.dir/basis.cpp.obj" "gcc" "CMakeFiles/FR1D.dir/basis.cpp.obj.d"
-  "C:/Users/tskoepli/Documents/GitHub/FR1D/indexing.cpp" "CMakeFiles/FR1D.dir/indexing.cpp.obj" "gcc" "CMakeFiles/FR1D.dir/indexing.cpp.obj.d"
-  "C:/Users/tskoepli/Documents/GitHub/FR1D/main.cpp" "CMakeFiles/FR1D.dir/main.cpp.obj" "gcc" "CMakeFiles/FR1D.dir/main.cpp.obj.d"
+  "C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/EulerFlux.cpp" "CMakeFiles/FR1D.dir/EulerFlux.cpp.obj" "gcc" "CMakeFiles/FR1D.dir/EulerFlux.cpp.obj.d"
+  "C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/SailorMath.cpp" "CMakeFiles/FR1D.dir/SailorMath.cpp.obj" "gcc" "CMakeFiles/FR1D.dir/SailorMath.cpp.obj.d"
+  "C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/SpatialDiscretization.cpp" "CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj" "gcc" "CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj.d"
+  "C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/basis.cpp" "CMakeFiles/FR1D.dir/basis.cpp.obj" "gcc" "CMakeFiles/FR1D.dir/basis.cpp.obj.d"
+  "C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/indexing.cpp" "CMakeFiles/FR1D.dir/indexing.cpp.obj" "gcc" "CMakeFiles/FR1D.dir/indexing.cpp.obj.d"
+  "C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/main.cpp" "CMakeFiles/FR1D.dir/main.cpp.obj" "gcc" "CMakeFiles/FR1D.dir/main.cpp.obj.d"
   )
 
 # Targets to which this target links.

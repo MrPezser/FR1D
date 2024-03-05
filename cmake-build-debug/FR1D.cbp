@@ -8,114 +8,112 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug"/>
+				<Option working_dir="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="FR1D">
-				<Option output="C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/FR1D.exe" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug"/>
+				<Option output="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/FR1D.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++"/>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32"/>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward"/>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include"/>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../include"/>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed"/>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../x86_64-w64-mingw32/include"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++/mingw32"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++/backward"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/6.3.0/include"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/6.3.0/../../../../include"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/6.3.0/include-fixed"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 FR1D"/>
-					<CompileFile command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 FR1D"/>
+					<CompileFile command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="FR1D/fast">
-				<Option output="C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/FR1D.exe" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug"/>
+				<Option output="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/FR1D.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++"/>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32"/>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward"/>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include"/>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../include"/>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed"/>
-					<Add directory="C:/Program Files/JetBrains/CLion 2023.1.3/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/11.2.0/../../../../x86_64-w64-mingw32/include"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++/mingw32"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/6.3.0/include/c++/backward"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/6.3.0/include"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/6.3.0/../../../../include"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/6.3.0/include-fixed"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 FR1D/fast"/>
-					<CompileFile command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 FR1D/fast"/>
+					<CompileFile command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug"/>
+				<Option working_dir="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug"/>
+				<Option working_dir="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/PROGRA~1/JETBRA~1/CLION2~1.3/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/tskoepli/Documents/GitHub/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="C:/Users/tskoepli/Documents/GitHub/FR1D/EulerFlux.cpp">
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/EulerFlux.cpp">
 			<Option target="FR1D"/>
 		</Unit>
-		<Unit filename="C:/Users/tskoepli/Documents/GitHub/FR1D/EulerFlux.h">
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/EulerFlux.h">
 			<Option target="FR1D"/>
 		</Unit>
-		<Unit filename="C:/Users/tskoepli/Documents/GitHub/FR1D/SailorMath.cpp">
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/SailorMath.cpp">
 			<Option target="FR1D"/>
 		</Unit>
-		<Unit filename="C:/Users/tskoepli/Documents/GitHub/FR1D/SailorMath.h">
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/SailorMath.h">
 			<Option target="FR1D"/>
 		</Unit>
-		<Unit filename="C:/Users/tskoepli/Documents/GitHub/FR1D/SpatialDiscretization.cpp">
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/SpatialDiscretization.cpp">
 			<Option target="FR1D"/>
 		</Unit>
-		<Unit filename="C:/Users/tskoepli/Documents/GitHub/FR1D/SpatialDiscretization.h">
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/SpatialDiscretization.h">
 			<Option target="FR1D"/>
 		</Unit>
-		<Unit filename="C:/Users/tskoepli/Documents/GitHub/FR1D/basis.cpp">
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/basis.cpp">
 			<Option target="FR1D"/>
 		</Unit>
-		<Unit filename="C:/Users/tskoepli/Documents/GitHub/FR1D/basis.h">
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/basis.h">
 			<Option target="FR1D"/>
 		</Unit>
-		<Unit filename="C:/Users/tskoepli/Documents/GitHub/FR1D/indexing.cpp">
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/indexing.cpp">
 			<Option target="FR1D"/>
 		</Unit>
-		<Unit filename="C:/Users/tskoepli/Documents/GitHub/FR1D/indexing.h">
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/indexing.h">
 			<Option target="FR1D"/>
 		</Unit>
-		<Unit filename="C:/Users/tskoepli/Documents/GitHub/FR1D/main.cpp">
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/main.cpp">
 			<Option target="FR1D"/>
 		</Unit>
-		<Unit filename="C:/Users/tskoepli/Documents/GitHub/FR1D/CMakeLists.txt">
+		<Unit filename="C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>
