@@ -5,9 +5,6 @@
 #include <stdexcept>
 #include "SpatialDiscretization.h"
 
-#define MU (5e-4)
-#define A (1.0)
-
 double AdvectionFaceFlux(const double a, const double uL, const double uR) {
     /// Finds the upwind flux according to the 1D advection equation
     ///a = wave speed | uL & uR are the left and right state variables
@@ -43,20 +40,27 @@ void FluxFaceCorrection(int nx, int ndegr, int nvar, const double* u, const doub
 
 
         //Calculate the common flux at the face
-        //FACEFLUX(&u[iu3(ielem, ndegr-1, 0, ndegr)], &u[iu3(iep1, 0, 0, ndegr)], common_flux);
-        common_flux[0] = FACEFLUX(A, u[iu3(ielem, ndegr-1, 0, ndegr)], u[iu3(iep1, 0, 0, ndegr)]);
+        FACEFLUX(&u[iu3(ielem, ndegr-1, 0, ndegr)], &u[iu3(iep1, 0, 0, ndegr)], common_flux);
+        //common_flux[0] = FACEFLUX(A, u[iu3(ielem, ndegr-1, 0, ndegr)], u[iu3(iep1, 0, 0, ndegr)]);
 
         //Calculate the element's local fluxes at the face
-        //FLUX(&u[iu3(ielem , ndegr-1 , 0, ndegr)], &fL[0]);
-        //FLUX(&u[iu3(iep1, 0       , 0, ndegr)], &fR[0]);
-        fL[0] = FLUX(A, u[iu3(ielem, ndegr-1, 0, ndegr)]);
-        fR[0] = FLUX(A, u[iu3(iep1, 0, 0, ndegr)]);
+        FLUX(&u[iu3(ielem , ndegr-1 , 0, ndegr)], &fL[0]);
+        FLUX(&u[iu3(iep1, 0       , 0, ndegr)], &fR[0]);
+        //fL[0] = FLUX(A, u[iu3(ielem, ndegr-1, 0, ndegr)]);
+        //fR[0] = FLUX(A, u[iu3(iep1, 0, 0, ndegr)]);
 
+        //anti-source (limiting)
+        double wack_factor;
+        if (ndegr == 2) {
+            wack_factor = -0.5;
+        }
 
         for (int inode=0; inode<ndegr; inode++){
             for (int kvar = 0; kvar<nvar; kvar++) {
-                fcorr_xi[iu3(ielem,ndegr-1-inode, kvar, ndegr)] -= (common_flux[kvar] - fL[kvar]) * Dradau[inode];   //ndegr-1-
-                fcorr_xi[iu3(iep1, inode        , kvar, ndegr)] += (common_flux[kvar] - fR[kvar]) * Dradau[inode];
+                //Element left of face flux
+                fcorr_xi[iu3(ielem,ndegr-1-inode, kvar, ndegr)] -= (common_flux[kvar] - fL[kvar]) * (Dradau[inode] + wack_factor);   //ndegr-1-
+                //Element right of face flux
+                fcorr_xi[iu3(iep1, inode        , kvar, ndegr)] += (common_flux[kvar] - fR[kvar]) * (Dradau[inode] + wack_factor);
             }
         }
     }
@@ -76,13 +80,14 @@ void DiscontinuousFlux(const int nx, const int np, const int ndegr, const int nv
     for (int ielem=0; ielem<nx; ielem++) {
 
         for (int inode = 0; inode < ndegr; inode++) {
-            //double flux[3];
-            //FLUX(&u[iu3(ielem, inode, 0, ndegr)], &flux[0]);
-            flux_node[inode] = FLUX(A, u[iu3(ielem, inode , 0, ndegr)]);
+            //flux_node[inode] = FLUX(A, u[iu3(ielem, inode , 0, ndegr)]);
 
-            //flux_node[iup(inode, 0, nvar)] = flux[0];
-            //flux_node[iup(inode, 1, nvar)] = flux[1];
-            //flux_node[iup(inode, 2, nvar)] = flux[2];
+
+            double flux[3];
+            FLUX(&u[iu3(ielem, inode, 0, ndegr)], &flux[0]);
+            flux_node[iup(inode, 0, nvar)] = flux[0];
+            flux_node[iup(inode, 1, nvar)] = flux[1];
+            flux_node[iup(inode, 2, nvar)] = flux[2];
         }
 
         //compute discontinuous flux slope (in reference element of width 2)
@@ -93,7 +98,6 @@ void DiscontinuousFlux(const int nx, const int np, const int ndegr, const int nv
 
             //Use the Lagrange polynomial derivative matrix to perform the MatVec -> interior contribution to flux slope
             for (int jnode = 0; jnode < ndegr; jnode++) {
-                //if (jnode == inode) continue;
                 for (int kvar = 0; kvar < nvar; kvar++) {
                     fxi[kvar] += flux_node[iup(jnode, kvar, nvar)] * Dmatrix[iup(inode, jnode, ndegr)];
                 }
@@ -267,7 +271,7 @@ void DiscontinuousStateDeriv(const int nx, const int np, const int ndegr, const 
     }
 }
 
-void CalcDudt(const int nx, const int ndegr, const int nvar, const double a, const double dx, const double* u, const double* Dmatrix, const double* Dradau, double* dudt ){
+void CalcDudt(const int nx, const int ndegr, const int nvar, const double dx, const double* u, const double* Dmatrix, const double* Dradau, double* dudt ){
     ///Calculates the solution update given a function to find flux
     int nu = nx * ndegr * nvar;
     int np = ndegr * nvar;
@@ -286,7 +290,7 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double a, con
     FluxFaceCorrection(nx, ndegr, nvar, u, Dradau, fcorr_xi);
     DiscontinuousFlux(nx, np, ndegr, nvar, u, Dmatrix, fcorr_xi);
 
-    /*
+
     StateFaceCorrection(nx, ndegr, nvar, u, Dradau, ucorr_xi);
     DiscontinuousState(nx, np, ndegr, nvar, u, Dmatrix, ucorr_xi);
 
@@ -296,27 +300,10 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double a, con
 
     StateDerivFaceCorrection(nx, ndegr, nvar, ucorr_x, Dradau, ucx_xi);
     DiscontinuousStateDeriv(nx, np, ndegr, nvar, ucorr_x, Dmatrix, ucx_xi);
-    */
 
 
-    for (int ielem=0; ielem<nx; ielem++) {
-        for (int inode=0; inode<ndegr ;inode++) {
-            for (int kvar = 0; kvar<nvar; kvar++) {
-                //convert from the reference element to the real element and negate to put make it dudt (= -f_x)
-                dudt[iu3(ielem, inode, kvar, ndegr)] = -(2/ dx) * (fcorr_xi[iu3(ielem,  inode, kvar, ndegr)]   );// - MU*ucx_xi[iu3(ielem,  inode, kvar, ndegr)]);
 
-               /* //fix end points for shock-tube like problem
-               if (ielem == 0 || ielem == nx-1){
-                   dudt[iu3(ielem, inode, kvar, ndegr)] = 0;
-               }*/
-
-                if (_isnan(dudt[iu3(ielem, inode, kvar, ndegr)])){
-                    throw std::overflow_error("dudt NAN\n");
-                }
-            }
-        }
-    }
-
+    /*
     //anti-source
     for (int ielem=1; ielem<nx-1; ielem++) {
         double uLL, uLR, uRR, uRL, duL, duR;
@@ -331,8 +318,26 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double a, con
         //need to do upwinding to determine the magnitude of flux contribution, for now we know it is a left-moving wave
         //so duR can be neglected
 
-        dudt[iu3(ielem, 0, 0, ndegr)] +=  0.0*2*A*duL/dx;
-        dudt[iu3(ielem, 1, 0, ndegr)] += 0.0*-2*A*duL/dx;
+        fcorr_xi[iu3(ielem, 0, 0, ndegr)] += -0.0*A*duL;
+        fcorr_xi[iu3(ielem, 1, 0, ndegr)] +=  0.0*A*duL;
+    }*/
+
+    for (int ielem=0; ielem<nx; ielem++) {
+        for (int inode=0; inode<ndegr ;inode++) {
+            for (int kvar = 0; kvar<nvar; kvar++) {
+                //convert from the reference element to the real element and negate to put make it dudt (= -f_x)
+                dudt[iu3(ielem, inode, kvar, ndegr)] = -(2/ dx) * (fcorr_xi[iu3(ielem,  inode, kvar, ndegr)] - MU*ucx_xi[iu3(ielem,  inode, kvar, ndegr)]);
+
+               /* //fix end points for shock-tube like problem
+               if (ielem == 0 || ielem == nx-1){
+                   dudt[iu3(ielem, inode, kvar, ndegr)] = 0;
+               }*/
+
+                if (_isnan(dudt[iu3(ielem, inode, kvar, ndegr)])){
+                    throw std::overflow_error("dudt NAN\n");
+                }
+            }
+        }
     }
 
 }

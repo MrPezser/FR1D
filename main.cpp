@@ -49,8 +49,8 @@ void InitializeEuler(double x, double* u){
     double v = 1.0;
     double p = 1.0;
 
-    //rho = Initialize(x);
-
+    rho = Initialize(x) + 10.0;
+    /*
     if (x < 0.5){
         rho = 1.0;
         v = 0.0;
@@ -60,6 +60,7 @@ void InitializeEuler(double x, double* u){
         v = 0.0;
         p = 0.1;
     }
+    */
 
     u[0] = rho;                             //rho
     u[1] = rho * v;                         //rho V
@@ -68,21 +69,18 @@ void InitializeEuler(double x, double* u){
 
 int main() {
     ///hardcoded inputs
-    int     nx = 80;           //Number of elements, nx+1 points
+    int     nx = 40;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
     int ndegr = 2;             //Degrees of freedom per element
-    int nvar = 1;               //Number of variables
+    int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
 
-    double cfl = 0.1 ;/// (ndegr*ndegr);          //CFL Number
-    double a = 1.0;             //Wave Speed
+    double cfl = 0.01/(ndegr*ndegr);          //CFL Number
 
-    double tmax = 0.02;
-    double dt = (cfl * dx) / a;
-    int niter = 3*80 ;//ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax
-    double cfl_eff = cfl;
-    printf("cfl_eff: %.4f\n\n", cfl_eff);
+    double tmax = 0.2;
+    double dt = (cfl * dx); // /a;
+    int niter = ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax //10*3*80
 
     //Find the solution points in reference space
     auto* xi = (double*)malloc(ndegr*sizeof(double));
@@ -109,8 +107,8 @@ int main() {
         //defining x position of cell centers
         x[i] = (i+0.5) * dx;
         for (int j=0; j<ndegr; j++) {
-            //InitializeEuler(x[i] + xi[j]*(0.5 * dx), &u[iu3(i, j, 0, ndegr)]);
-            u[iu3(i,j,0, ndegr)] = Initialize(x[i] + (0.0*dx)); //enforce a sharp initial discon
+            InitializeEuler(x[i], &u[iu3(i, j, 0, ndegr)]);    //+ xi[j]*(0.5 * dx)
+            //u[iu3(i,j,0, ndegr)] = Initialize(x[i] + (0.0*dx)); //enforce a sharp initial discon
                     //Initialize(x[i] + xi[j]*(0.5 * dx));  //will allow a slop initial cond.
         }
     }
@@ -123,7 +121,7 @@ int main() {
     for (int iter=0; iter<niter; iter++){
         veccopy(u_tmp, u, nu);
         //1st stage
-        CalcDudt(nx, ndegr, nvar, a, dx, u, Dmatrix, Dradau, dudt);
+        CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
         for (int i=0; i<nu; i++){
             //u_tmp[i] += dt * dudt[i];
             u[i] += dt * dudt[i];
@@ -136,13 +134,13 @@ int main() {
 
         /*
         //2nd stage
-        CalcDudt(nx, ndegr, nvar, a, dx, u_tmp, Dmatrix, Dradau, dudt);
+        CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
         for (int i=0; i<nu; i++){
             u_tmp[i] = 0.75*u[i] + 0.25*( u_tmp[i] + dt*dudt[i]);
         }
 
         //3rd stage
-        CalcDudt(nx, ndegr, nvar, a, dx, u_tmp, Dmatrix, Dradau, dudt);
+        CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
         for (int i=0; i<nu; i++){
             u[i] = (1.0/3.0)*u[i] + (2.0/3.0)*(u_tmp[i] + dt*dudt[i]);
         }
@@ -160,25 +158,25 @@ int main() {
         for (int j=0; j<max(ndegr,2); j++) {
             double xj;
 
-            if (ndegr == 1){
-                double xii = -1.0 + 2.0*j;
-                xj = x[i] + xii * (0.5 * dx);
-                fprintf(fout, "%f\t%f\n", xj , u[iu3(i,0,0,ndegr)]);
+            if (nvar == 1) {
+                if (ndegr == 1) {
+                    double xii = -1.0 + 2.0 * j;
+                    xj = x[i] + xii * (0.5 * dx);
+                    fprintf(fout, "%f\t%f\n", xj, u[iu3(i, 0, 0, ndegr)]);
+                } else {
+                    xj = x[i] + xi[j] * (0.5 * dx);
+                    fprintf(fout, "%f\t%f\n", xj, u[iu3(i, j, 0, ndegr)]);
+                }
             } else {
                 xj = x[i] + xi[j] * (0.5 * dx);
-                fprintf(fout, "%f\t%f\n", xj , u[iu3(i,j,0,ndegr)]);
+                fprintf(fout, "%f\t%f\t%f\t%f\t", xj, u[iu3(i, j, 0, ndegr)], u[iu3(i, j, 1, ndegr)],
+                        u[iu3(i, j, 2, ndegr)]);
+
+                double rho, v, p, c, M;
+                getPrimativesPN(GAM, &u[iu3(i, j, 0, ndegr)], &rho, &v, &p, &c, &M);
+
+                fprintf(fout, "%f\t%f\t%f\n", p, c, M);
             }
-
-            /*
-            fprintf(fout, "%f\t%f\t%f\t%f\t", xj , u[iu3(i,j,0,ndegr)],  u[iu3(i,j,1,ndegr)],  u[iu3(i,j,2,ndegr)]);
-
-            double rho, v, p, c, M;
-            getPrimativesPN(GAM , &u[iu3(i,j,0,ndegr)], &rho, &v, &p, &c, &M);
-
-            fprintf(fout, "%f\t%f\t%f\n", p, c, M);
-            fprintf(fout, "%f\t%f\t", xj , u[iu3(i,j,0,ndegr)]);
-            fprintf(fout, "%f\n", u0[iu3(i,j,0,ndegr)]);
-            */
         }
     }
 
