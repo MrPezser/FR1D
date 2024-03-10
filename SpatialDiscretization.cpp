@@ -32,7 +32,9 @@ void FluxFaceCorrection(int nx, int ndegr, int nvar, const double* u, const doub
         ielem = iface;
         if (iface == nx-1) {
             //extrapolation boundary condition
-            iep1 = iface;//0;
+            iep1 = iface;
+            //periodic bc
+            //iep1 = 0;
         } else {
             //Interior Cell
             iep1 = iface+1;
@@ -51,8 +53,8 @@ void FluxFaceCorrection(int nx, int ndegr, int nvar, const double* u, const doub
 
         //anti-source (limiting)
         double wack_factor;
-        if (ndegr == 2) {
-            wack_factor = -0.5;
+        if (ndegr >= 2) {
+            wack_factor = -1.5;
         }
 
         for (int inode=0; inode<ndegr; inode++){

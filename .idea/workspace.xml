@@ -23,12 +23,11 @@
     <list default="true" id="65e6c9bb-9de6-40f3-b189-9f510047c9d8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SpatialDiscretization.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/SpatialDiscretization.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SpatialDiscretization.h" beforeDir="false" afterPath="$PROJECT_DIR$/SpatialDiscretization.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/FR1D.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/FR1D.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/waveout.tec" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/waveout.tec" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/indexing.h" beforeDir="false" afterPath="$PROJECT_DIR$/indexing.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/p1_limiting.lpk" beforeDir="false" afterPath="$PROJECT_DIR$/p1_limiting.lpk" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +121,9 @@
       <workItem from="1709620736144" duration="5610000" />
       <workItem from="1709627007132" duration="2061000" />
       <workItem from="1709676088916" duration="2558000" />
-      <workItem from="1709685812282" duration="8673000" />
+      <workItem from="1709685812282" duration="8697000" />
+      <workItem from="1709737285432" duration="13000" />
+      <workItem from="1709747106832" duration="7340000" />
     </task>
     <servers />
   </component>

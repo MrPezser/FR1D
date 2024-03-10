@@ -22,7 +22,7 @@ double Initialize(double x){
     //Gaussian bump and step combo
     /*
     if (x < 0.6) {
-        double beta = 0.01;
+        double beta = 0.005;
         return 1 + exp(-(x-0.3)*(x-0.3) / beta);
     } else {
         if (x < 0.8) {
@@ -30,8 +30,8 @@ double Initialize(double x){
         } else {
             return 1.0;
         }
-    }
-    */
+    }*/
+
 
     //return 2.0 + sin(2.0*M_PI*x);
 
@@ -78,7 +78,7 @@ int main() {
 
     double cfl = 0.01/(ndegr*ndegr);          //CFL Number
 
-    double tmax = 0.2;
+    double tmax = 0.3;
     double dt = (cfl * dx); // /a;
     int niter = ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax //10*3*80
 
