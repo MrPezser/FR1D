@@ -52,10 +52,20 @@ void FluxFaceCorrection(int nx, int ndegr, int nvar, const double* u, const doub
         //fR[0] = FLUX(A, u[iu3(iep1, 0, 0, ndegr)]);
 
         //anti-source (limiting)
-        double wack_factor;
+        double wack_factor{0.0};
+        double Dradau_mod[ndegr];
+
+        /*
         if (ndegr >= 2) {
-            wack_factor = -1.5;
-        }
+
+            for (int ideg=0 ;ideg<ndegr;ideg++){
+                Dradau_mod[ideg] = 0.0;
+            }
+        // Radau_P1 >> -2.0, 1.0
+            wack_factor = -0.1;
+            Dradau_mod[1] = -0.5;
+            Dradau_mod[0] = -3.0;
+        }*/
 
         for (int inode=0; inode<ndegr; inode++){
             for (int kvar = 0; kvar<nvar; kvar++) {
@@ -292,7 +302,7 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double dx, co
     FluxFaceCorrection(nx, ndegr, nvar, u, Dradau, fcorr_xi);
     DiscontinuousFlux(nx, np, ndegr, nvar, u, Dmatrix, fcorr_xi);
 
-
+    /*
     StateFaceCorrection(nx, ndegr, nvar, u, Dradau, ucorr_xi);
     DiscontinuousState(nx, np, ndegr, nvar, u, Dmatrix, ucorr_xi);
 
@@ -302,7 +312,7 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double dx, co
 
     StateDerivFaceCorrection(nx, ndegr, nvar, ucorr_x, Dradau, ucx_xi);
     DiscontinuousStateDeriv(nx, np, ndegr, nvar, ucorr_x, Dmatrix, ucx_xi);
-
+    */
 
 
     /*

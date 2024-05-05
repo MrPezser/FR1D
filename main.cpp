@@ -20,7 +20,7 @@ double Initialize(double x){
 
 
     //Gaussian bump and step combo
-    /*
+
     if (x < 0.6) {
         double beta = 0.005;
         return 1 + exp(-(x-0.3)*(x-0.3) / beta);
@@ -30,7 +30,7 @@ double Initialize(double x){
         } else {
             return 1.0;
         }
-    }*/
+    }
 
 
     //return 2.0 + sin(2.0*M_PI*x);
@@ -49,18 +49,18 @@ void InitializeEuler(double x, double* u){
     double v = 1.0;
     double p = 1.0;
 
-    rho = Initialize(x) + 10.0;
-    /*
+    //rho = Initialize(x) + 10.0;
+
     if (x < 0.5){
         rho = 1.0;
         v = 0.0;
         p = 1.0;
     } else {
-        rho = 0.125;
+        rho = 1.0 / 211.0 ;//0.125;
         v = 0.0;
-        p = 0.1;
+        p = rho;
     }
-    */
+
 
     u[0] = rho;                             //rho
     u[1] = rho * v;                         //rho V
@@ -69,16 +69,16 @@ void InitializeEuler(double x, double* u){
 
 int main() {
     ///hardcoded inputs
-    int     nx = 40;           //Number of elements, nx+1 points
+    int     nx = 1000;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int ndegr = 2;             //Degrees of freedom per element
+    int ndegr = 1;             //Degrees of freedom per element
     int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
 
     double cfl = 0.01/(ndegr*ndegr);          //CFL Number
 
-    double tmax = 0.3;
+    double tmax = 0.1;
     double dt = (cfl * dx); // /a;
     int niter = ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax //10*3*80
 
