@@ -69,16 +69,16 @@ void InitializeEuler(double x, double* u){
 
 int main() {
     ///hardcoded inputs
-    int     nx = 1000;           //Number of elements, nx+1 points
+    int     nx = 100;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int ndegr = 1;             //Degrees of freedom per element
+    int ndegr = 3;             //Degrees of freedom per element
     int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
 
-    double cfl = 0.01/(ndegr*ndegr);          //CFL Number
+    double cfl = 0.1/(ndegr*ndegr);          //CFL Number
 
-    double tmax = 0.1;
+    double tmax = 0.6;
     double dt = (cfl * dx); // /a;
     int niter = ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax //10*3*80
 
@@ -92,7 +92,7 @@ int main() {
     GenerateLagrangeDMatrix(ndegr, xi, Dmatrix);
 
     //Find the derivatives of the Radau polynomial of appropriate degree
-    auto* Dradau = (double*)malloc((1+ndegr)*sizeof(double));
+    auto* Dradau = (double*)malloc(2*(1+ndegr)*sizeof(double));
     GenerateRadauDerivatives(ndegr, xi, Dradau);
 
     //Allocate Arrays
@@ -107,9 +107,14 @@ int main() {
         //defining x position of cell centers
         x[i] = (i+0.5) * dx;
         for (int j=0; j<ndegr; j++) {
-            InitializeEuler(x[i], &u[iu3(i, j, 0, ndegr)]);    //+ xi[j]*(0.5 * dx)
-            //u[iu3(i,j,0, ndegr)] = Initialize(x[i] + (0.0*dx)); //enforce a sharp initial discon
-                    //Initialize(x[i] + xi[j]*(0.5 * dx));  //will allow a slop initial cond.
+            //InitializeEuler(x[i], &u[iu3(i, j, 0, ndegr)]);    //+ xi[j]*(0.5 * dx)
+
+            if (x[i] > 0.6) {
+                u[iu3(i, j, 0, ndegr)] = Initialize(x[i] + (0.0 * dx)); //enforce a sharp initial discon
+            } else {
+                u[iu3(i, j, 0, ndegr)] = Initialize(x[i] + xi[j]*(0.5 * dx));
+            }
+            //Initialize(x[i] + xi[j]*(0.5 * dx));  //will allow a slop initial cond.
         }
     }
 
@@ -132,7 +137,7 @@ int main() {
         }
 
 
-        /*
+
         //2nd stage
         CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
         for (int i=0; i<nu; i++){
@@ -144,7 +149,7 @@ int main() {
         for (int i=0; i<nu; i++){
             u[i] = (1.0/3.0)*u[i] + (2.0/3.0)*(u_tmp[i] + dt*dudt[i]);
         }
-        */
+
         if (iter % 100 == 0){printf("iter:%10d\t%7.2f%% Complete\n",iter, 100.0*(double)iter/(double)niter);}
     }
 

@@ -170,6 +170,23 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
     ///Finds the derivatives of the Right Radau polynomial of degree ndegr at points x
     //Radau_R = ((-1^k)/2) * (P_k - P_k-1), left Radau is just mirrored around x=0
 
+
+    for (int ipoin=0; ipoin<ndegr; ipoin++) {
+        int gorder = ndegr;
+
+        //Dradau[ipoin] = - 0.5 * M_PI_2 * cos(x[ipoin]*M_PI_2);
+        //Dradau[ipoin+ndegr] = 0.5 * (- sin(x[ipoin]*M_PI_2) + 1.0);
+
+        //Dradau[ipoin] = -0.5 * gorder * pow(0.5*(1-x[ipoin]), gorder-1); //derivatives
+        //Dradau[ipoin+ndegr] = pow(0.5*(1-x[ipoin]), gorder);//function values
+
+        //Dradau[ipoin] = 0.0;
+        //Dradau[ipoin+ndegr] = 0.0;
+    }
+    //Dradau[0] = -2.0 / (x[1]-x[0]);
+    //Dradau[0+ndegr] = 1.0;
+    //return;
+
     //Get coefficients of the p_k and p_k-1 legendre polynomials
     auto* coeffpk   = (double*)malloc((ndegr+1)*sizeof(double));
     LegendreCoefficients(ndegr, coeffpk);
@@ -192,6 +209,12 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
     //Compute the analytical derivative using the power-rule
     double coeffDrad[ndegr];
     for (int idegr=0; idegr < ndegr; idegr++) {
+        //also store the value of the radau polynomial
+        Dradau[idegr+ndegr] = 0.0;
+        for (int ipoin=0; ipoin<ndegr+1; ipoin++){
+            Dradau[idegr+ndegr] += coeffRR[ipoin] * pow(x[idegr], (double)ipoin);  //degr and point are swapped on this
+        }
+
         coeffDrad[idegr] = (idegr+1)*coeffRR[idegr+1];
     }
 
@@ -202,6 +225,8 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
         for (int idegr=0; idegr<ndegr; idegr++){
             Dradau[ipoin] += coeffDrad[idegr] * pow(x[ipoin], (double)idegr);
         }
+
+
     }
 
     free(coeffpk);

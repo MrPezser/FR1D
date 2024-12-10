@@ -10,12 +10,12 @@
 #define GAM (1.4)
 #define MU (1e-3)
 #define A (1.0)
-#define FACEFLUX(a, b, c) LeerFlux(GAM, a, b, c) //AdvectionFaceFlux(a, b, c)
-#define FLUX(a,b)  EulerFlux(GAM, a, b) //AdvectionFlux(a, b)
+#define FACEFLUX(a, b, c) AdvectionFaceFlux(a, b, c) //LeerFlux(GAM, a, b, c)
+#define FLUX(a,b)  AdvectionFlux(a, b)  //EulerFlux(GAM, a, b)
 
 #ifndef FR1D_SPATIALDISCRETIZATION_H
 #define FR1D_SPATIALDISCRETIZATION_H
 
-void CalcDudt(int nx, int ndegr, int nvar, double dx, const double* u, const double* Dmatrix, const double* Dradau, double* dudt );
+void CalcDudt(int nx, int ndegr, int nvar, double dx, double* u, const double* Dmatrix, const double* Dradau, double* dudt );
 
 #endif //FR1D_SPATIALDISCRETIZATION_H
