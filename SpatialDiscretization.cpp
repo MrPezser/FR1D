@@ -54,14 +54,14 @@ void FluxFaceCorrection(int nx, int ndegr, int nvar, double* u, const double* Dr
         for (int inode=0; inode<ndegr; inode++){   //loop over solution points
             for (int kvar = 0; kvar<nvar; kvar++) {   //loop over variables/equations (used when Euler Equation fluxes enabled)
                 //Element left of face flux slope
-                //fcorr_xi[iu3(ielem,ndegr-1-inode, kvar, ndegr)] -= (common_flux[kvar] - fL[kvar]) * (Dradau[inode]);
+                fcorr_xi[iu3(ielem,ndegr-1-inode, kvar, ndegr)] -= (common_flux[kvar] - fL[kvar]) * (Dradau[inode]);
                 //Element right of face flux slope
-                //fcorr_xi[iu3(iep1, inode        , kvar, ndegr)] += (common_flux[kvar] - fR[kvar]) * (Dradau[inode]);
+                fcorr_xi[iu3(iep1, inode        , kvar, ndegr)] += (common_flux[kvar] - fR[kvar]) * (Dradau[inode]);
 
                 //This is adding the value of the modified correction polynomial at a solution point to the solution
-                double g_point = Dradau[inode+ndegr]; //value of the correction function at solution node/point
-                u[iu3(ielem, ndegr-1-inode, kvar, ndegr)] -= (common_flux[kvar] - fL[kvar]) * g_point;
-                u[iu3(iep1,  inode,         kvar, ndegr)] += (common_flux[kvar] - fR[kvar]) * g_point;
+                //double g_point = Dradau[inode+ndegr]; //value of the correction function at solution node/point
+                //u[iu3(ielem, ndegr-1-inode, kvar, ndegr)] -= (common_flux[kvar] - fL[kvar]) * g_point;
+                //u[iu3(iep1,  inode,         kvar, ndegr)] += (common_flux[kvar] - fR[kvar]) * g_point;
             }
         }
     }

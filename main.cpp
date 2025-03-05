@@ -72,7 +72,7 @@ int main() {
     int     nx = 100;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int ndegr = 3;             //Degrees of freedom per element
+    int ndegr = 2;             //Degrees of freedom per element
     int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
 

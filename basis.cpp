@@ -171,6 +171,7 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
     //Radau_R = ((-1^k)/2) * (P_k - P_k-1), left Radau is just mirrored around x=0
 
 
+    //Monotobasis functions
     for (int ipoin=0; ipoin<ndegr; ipoin++) {
         int gorder = ndegr;
 
@@ -186,6 +187,14 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
     //Dradau[0] = -2.0 / (x[1]-x[0]);
     //Dradau[0+ndegr] = 1.0;
     //return;
+
+    if (ndegr==2){
+        Dradau[0] = -20/8.0;//2.124 - 1.0/2.0;
+        Dradau[1] =  12.0/8.0;//1.0/2.124 - 1.0/2.0;
+        //Dradau[2] = 1.0;
+        //Dradau[3] = 0.0;
+    }
+    return;
 
     //Get coefficients of the p_k and p_k-1 legendre polynomials
     auto* coeffpk   = (double*)malloc((ndegr+1)*sizeof(double));
