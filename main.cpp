@@ -69,14 +69,14 @@ void InitializeEuler(double x, double* u){
 
 int main() {
     ///hardcoded inputs
-    int     nx = 100;           //Number of elements, nx+1 points
+    int     nx = 4;//100;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int ndegr = 2;             //Degrees of freedom per element
+    int ndegr = 40;             //Degrees of freedom per element
     int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
 
-    double cfl = 0.1/(ndegr*ndegr);          //CFL Number
+    double cfl = 0.05/(ndegr*ndegr);          //CFL Number
 
     double tmax = 0.6;
     double dt = (cfl * dx); // /a;

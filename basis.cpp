@@ -189,12 +189,12 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
     //return;
 
     if (ndegr==2){
-        Dradau[0] = -20/8.0;//2.124 - 1.0/2.0;
-        Dradau[1] =  12.0/8.0;//1.0/2.124 - 1.0/2.0;
+        //Dradau[0] = -20/8.0;//2.124 - 1.0/2.0;
+        //Dradau[1] =  12.0/8.0;//1.0/2.124 - 1.0/2.0;
         //Dradau[2] = 1.0;
         //Dradau[3] = 0.0;
     }
-    return;
+    //return;
 
     //Get coefficients of the p_k and p_k-1 legendre polynomials
     auto* coeffpk   = (double*)malloc((ndegr+1)*sizeof(double));

@@ -335,7 +335,7 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double dx, do
                    dudt[iu3(ielem, inode, kvar, ndegr)] = 0;
                }*/
 
-                if (_isnan(dudt[iu3(ielem, inode, kvar, ndegr)])){
+                if (__isnan(dudt[iu3(ielem, inode, kvar, ndegr)])){
                     throw std::overflow_error("dudt NAN\n");
                 }
             }
