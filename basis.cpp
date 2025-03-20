@@ -123,6 +123,11 @@ void GenerateLobattoPoints(int numPoints, double* points){
         // Save Lobatto quadrature point
         points[i] = x;
     }
+
+    for (int i=0; i<numPoints; i++){
+        printf("(%f)", points[i]);
+    }
+    printf("\n");
 }
 
 
@@ -195,6 +200,14 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
         //Dradau[3] = 0.0;
     }
     //return;
+
+    //Monotone of the 2nd kind
+    if (ndegr==3){
+        Dradau[0] = -1.28821;
+        Dradau[1] = -0.427948;
+        Dradau[2] = -0.0;
+        return;
+    }
 
     //Get coefficients of the p_k and p_k-1 legendre polynomials
     auto* coeffpk   = (double*)malloc((ndegr+1)*sizeof(double));
