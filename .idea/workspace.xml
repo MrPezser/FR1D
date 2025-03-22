@@ -22,13 +22,7 @@
   <component name="ChangeListManager">
     <list default="true" id="65e6c9bb-9de6-40f3-b189-9f510047c9d8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SpatialDiscretization.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/SpatialDiscretization.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/basis.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/basis.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/.cmake/api/v1/reply/index-2024-08-01T19-21-23-0046.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/FR1D.dir/SpatialDiscretization.cpp.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/FR1D.dir/basis.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/FR1D.dir/basis.cpp.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/FR1D.dir/main.cpp.obj" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/FR1D.dir/main.cpp.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/FR1D.dir/objects.a" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/FR1D.dir/objects.a" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/FR1D.exe" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/FR1D.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Testing/Temporary/LastTest.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/waveout.tec" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/waveout.tec" afterDir="false" />
@@ -159,6 +153,10 @@
       <workItem from="1736558452001" duration="6156000" />
       <workItem from="1736614574887" duration="698000" />
       <workItem from="1736720376643" duration="917000" />
+      <workItem from="1742269331214" duration="14000" />
+      <workItem from="1742269450116" duration="2635000" />
+      <workItem from="1742623928693" duration="456000" />
+      <workItem from="1742624412285" duration="2466000" />
     </task>
     <servers />
   </component>

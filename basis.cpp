@@ -183,7 +183,7 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
         //Dradau[ipoin] = - 0.5 * M_PI_2 * cos(x[ipoin]*M_PI_2);
         //Dradau[ipoin+ndegr] = 0.5 * (- sin(x[ipoin]*M_PI_2) + 1.0);
 
-        //Dradau[ipoin] = -0.5 * gorder * pow(0.5*(1-x[ipoin]), gorder-1); //derivatives
+        Dradau[ipoin] = -0.5 * gorder * pow(0.5*(1-x[ipoin]), gorder-1); //derivatives
         //Dradau[ipoin+ndegr] = pow(0.5*(1-x[ipoin]), gorder);//function values
 
         //Dradau[ipoin] = 0.0;
@@ -194,12 +194,10 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
     //return;
 
     if (ndegr==2){
-        //Dradau[0] = -20/8.0;//2.124 - 1.0/2.0;
-        //Dradau[1] =  12.0/8.0;//1.0/2.124 - 1.0/2.0;
-        //Dradau[2] = 1.0;
-        //Dradau[3] = 0.0;
+        Dradau[0] = -2.03;//-2.75;//-2.0
+        Dradau[1] = 0.94;// 1.0
+        return;
     }
-    //return;
 
     //Monotone of the 2nd kind
     if (ndegr==3){
