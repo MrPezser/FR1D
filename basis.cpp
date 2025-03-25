@@ -193,19 +193,22 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
     //Dradau[0+ndegr] = 1.0;
     //return;
 
+
     if (ndegr==2){
-        Dradau[0] = -2.03;//-2.75;//-2.0
-        Dradau[1] = 0.94;// 1.0
-        return;
+        Dradau[0] = -2.5;//-2.75;//-2.0
+        Dradau[1] = 0.0;// 1.0
+        //return;
     }
 
     //Monotone of the 2nd kind
     if (ndegr==3){
-        Dradau[0] = -1.28821;
-        Dradau[1] = -0.427948;
-        Dradau[2] = -0.0;
-        return;
+        Dradau[0] = -5.0;//-1.28821;
+        Dradau[1] = 0.5;//-0.427948;
+        Dradau[2] = 0.0;//-0.0;
+        //return;
     }
+
+
 
     //Get coefficients of the p_k and p_k-1 legendre polynomials
     auto* coeffpk   = (double*)malloc((ndegr+1)*sizeof(double));
@@ -216,19 +219,45 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
     LegendreCoefficients(ndegr-1, coeffpkm1);
 
 
-    //Construct the Radau Polynomial
-    double coeffRR[ndegr+1];
-    for (int idegr=0; idegr<=ndegr; idegr++){
+    int ISLOPE = 1;
+    double s = -0.5;
+    double a = s;
+    double b = -(1.0 + 1.0/s);
 
-        coeffRR[idegr] = 0.5*(coeffpk[idegr] - coeffpkm1[idegr]);
+    //Construct the Radau Polynomial
+    double coeffRR[ndegr+1+ISLOPE];
+    for (int idegr=0; idegr<=ndegr; idegr++) {
+
+        coeffRR[idegr] = 0.5 * (coeffpk[idegr] - coeffpkm1[idegr]);
         if (ndegr % 2) {
             coeffRR[idegr] *= -1.0;
         }
     }
+    for (int idegr=0; idegr<=ndegr+ISLOPE; idegr++){
+        printf("%f, ",coeffRR[idegr]);
+    }
+    printf("\n");
+    if (ISLOPE==1) {
+        coeffRR[ndegr + 1] = 0.0;
+        for (int idegr = 0; idegr <= ndegr; idegr++) {
+            coeffRR[idegr] *= a;
+        }
+        for (int idegr = ndegr + 1; idegr >= 1; idegr--) {
+            coeffRR[idegr] = coeffRR[idegr-1] - b*coeffRR[idegr];
+        }
+        coeffRR[0] *= -b;
+
+        printf("a,b = %f, %f\n", a, b);
+        for (int idegr = 0; idegr <= ndegr + 1; idegr++) {
+            printf("%f, ", coeffRR[idegr]);
+        }
+    }
+
+
 
     //Compute the analytical derivative using the power-rule
     double coeffDrad[ndegr];
-    for (int idegr=0; idegr < ndegr; idegr++) {
+    for (int idegr=0; idegr < ndegr+ISLOPE; idegr++) {
         //also store the value of the radau polynomial
         Dradau[idegr+ndegr] = 0.0;
         for (int ipoin=0; ipoin<ndegr+1; ipoin++){
@@ -242,7 +271,7 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
     for (int ipoin=0; ipoin<ndegr; ipoin++){
         Dradau[ipoin] = 0.0;
 
-        for (int idegr=0; idegr<ndegr; idegr++){
+        for (int idegr=0; idegr<ndegr+ISLOPE; idegr++){
             Dradau[ipoin] += coeffDrad[idegr] * pow(x[ipoin], (double)idegr);
         }
 
