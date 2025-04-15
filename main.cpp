@@ -76,7 +76,7 @@ int main() {
     int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
 
-    double cfl = 0.1/(ndegr*ndegr);          //CFL Number
+    double cfl = 0.4/(ndegr*ndegr);          //CFL Number
 
     double tmax = 10.4;
     double dt = (cfl * dx); // /a;
