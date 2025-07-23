@@ -1,5 +1,6 @@
 #include "initial.h"
 #include "SpatialDiscretization.h"
+#include <cmath>
 
 double Initialize(double x){
     ///This defines the intial state of the solution space
@@ -11,11 +12,11 @@ double Initialize(double x){
         double beta = 0.005;
         return 1.0 + exp(-(x-0.3)*(x-0.3) / beta);
     } else {
-        //if (x < 0.8) {
-        //    return 2.0;
-        //} else {
+        if (x < 0.8) {
+            return 2.0;
+        } else {
             return 1.0;
-        //}
+        }
     }
     return 0.0;
 
@@ -36,17 +37,19 @@ void InitializeEuler(double x, double* u){
     double v = 1.0;
     double p = 1.0;
 
-    //rho = Initialize(x) + 10.0;
+    rho = Initialize(x);
 
+    /*
     if (x < 0.5){
         rho = 1.0;
         v = 0.0;
         p = 1.0;
     } else {
-        rho = 1.0 / 211.0 ;//0.125;
+        rho = 0.125;
         v = 0.0;
         p = rho;
     }
+    */
 
 
     u[0] = rho;                             //rho

@@ -8,9 +8,10 @@
 #include "initial.h"
 #include "Implicit.h"
 
-#define EEULER (1)
-#define TVDRK3 (3)
-#define SEMIIMP (0)
+#define EEULER   (1)
+#define TVDRK3   (3)
+#define SEMIIMP  (10)
+#define SITVDRK3 (30)
 
 using namespace std;
 
@@ -20,24 +21,49 @@ void veccopy(double* a, const double* b, size_t n){
     }
 }
 
+double dt_from_CFL(double dt0, int nelem, int ndegr, double* u){
+  double gam = 1.4;
+  double dt = 9999999999.0;
+
+  for (int ielem=0; ielem<nelem; ielem++){
+    for (int j=0; j<ndegr; j++){
+      //
+      double *uij = &(u[iu3(ielem,j,0,ndegr)]);
+      //
+      double rho, v, p, c, M;
+      getPrimativesPN(gam, uij, &rho, &v, &p, &c, &M);
+      //
+      dt = fmin(dt,dt0/c);
+      //printf("ix,jdeg,dt,dt0,c : %d,%d,%f,%f,%f\n",ielem,j,dt,dt0,c);
+      //printf("uij:rho,v,c,M: %f,%f,%f : %f,%f,%f,%f\n",uij[0], uij[1], uij[2],rho,p,c,M);
+    }
+  }
+
+  return dt;
+
+}
 
 int main() {
     ///hardcoded inputs
     int     nx = 100;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int ndegr = 7;             //Degrees of freedom per element
+    int ndegr = 4;             //Degrees of freedom per element
     int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
 
-    double cfl = 2.0/(ndegr*ndegr);          //CFL Number
+    double cfl = 1.0/(ndegr*ndegr);          //CFL Number
 
-    double tmax = 1.0;
+    double tmax = 0.6;
     double dt = (cfl * dx); // /a;
+    double dt0 = dt;
     int niter = ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax //10*3*80
+
+    double gam = 1.4;//warning, not global
     
     int timestepping = TVDRK3;
-    timestepping = SEMIIMP;
+    //timestepping = SEMIIMP;
+    //timestepping = SITVDRK3;
     //timestepping = EEULER;
 
     //Find the solution points in reference space
@@ -65,14 +91,17 @@ int main() {
         //defining x position of cell centers
         x[i] = (i+0.5) * dx;
         for (int j=0; j<ndegr; j++) {
-            //InitializeEuler(x[i], &u[iu3(i, j, 0, ndegr)]);    //+ xi[j]*(0.5 * dx)
-
-            if (x[i] > 0.6) {
-                u[iu3(i, j, 0, ndegr)] = Initialize(x[i] + (0.0 * dx)); //enforce a sharp initial discon
+            if (nvar ==3) {
+                InitializeEuler(x[i]+ xi[j]*(0.5 * dx), &u[iu3(i, j, 0, ndegr)]);
             } else {
-                u[iu3(i, j, 0, ndegr)] = Initialize(x[i] + xi[j]*(0.5 * dx));
-            }
+
+                if (x[i] > 0.6) {
+                    u[iu3(i, j, 0, ndegr)] = Initialize(x[i] + (0.0 * dx)); //enforce a sharp initial discon
+                } else {
+                    u[iu3(i, j, 0, ndegr)] = Initialize(x[i] + xi[j]*(0.5 * dx));
+                }
             //Initialize(x[i] + xi[j]*(0.5 * dx));  //will allow a slop initial cond.
+            }
         }
     }
 
@@ -82,9 +111,11 @@ int main() {
     auto* u_tmp = (double*)malloc(nu*sizeof(double));
 
     for (int iter=0; iter<niter; iter++){
-        veccopy(u_tmp, u, nu);
 
         if (timestepping == EEULER) {
+            if (nvar ==3) {
+                dt = dt_from_CFL(dt0, nx, ndegr, u);
+            }
             //1st stage
             CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
             for (int i=0; i<nu; i++){
@@ -98,7 +129,11 @@ int main() {
         }
 
         if (timestepping == TVDRK3) {
+            veccopy(u_tmp, u, nu);
             //1st stage
+            if (nvar ==3) {
+                dt = dt_from_CFL(dt0, nx, ndegr, u);
+            }
             CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
             for (int i=0; i<nu; i++){
                 u_tmp[i] += dt * dudt[i];
@@ -108,12 +143,18 @@ int main() {
                 }
             }
             //2nd stage
+            if (nvar ==3) {
+                dt = dt_from_CFL(dt0, nx, ndegr, u_tmp);
+            }
             CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
             for (int i=0; i<nu; i++){
                 u_tmp[i] = 0.75*u[i] + 0.25*( u_tmp[i] + dt*dudt[i]);
             }
          
             //3rd stage
+            if (nvar ==3) {
+                dt = dt_from_CFL(dt0, nx, ndegr, u_tmp);
+            }
             CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
             for (int i=0; i<nu; i++){
                 u[i] = (1.0/3.0)*u[i] + (2.0/3.0)*(u_tmp[i] + dt*dudt[i]);
@@ -121,6 +162,9 @@ int main() {
         }
 
         if (timestepping == SEMIIMP) {
+            if (nvar ==3) {
+                dt = dt_from_CFL(dt0, nx, ndegr, u);
+            }
             // Do regular explicit euler, but with implicit discontinuous flux
             CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
             //
@@ -128,14 +172,86 @@ int main() {
             SemiImplicitSolve(nx, ndegr, nvar, dx, u, Dmatrix, dt, dudt);
         }
 
-        if (iter % 100 == 0){printf("iter:%10d\t%7.2f%% Complete\n",iter, 100.0*(double)iter/(double)niter);}
+        if (timestepping == SITVDRK3) {
+            veccopy(u_tmp, u, nu);
+            //1st stage
+            if (nvar ==3) {
+                dt = dt_from_CFL(dt0, nx, ndegr, u_tmp);
+            }
+            CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
+            // Implicit Solve
+            SemiImplicitSolve(nx, ndegr, nvar, dx, u_tmp, Dmatrix, dt, dudt);
+
+            //2nd stage
+            if (nvar ==3) {
+                dt = dt_from_CFL(dt0, nx, ndegr, u_tmp);
+            }
+            CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
+            SemiImplicitSolve(nx, ndegr, nvar, dx, u_tmp, Dmatrix, dt, dudt);
+            for (int i=0; i<nu; i++){
+                u_tmp[i] = 0.75*u[i] + 0.25*(u_tmp[i]);
+            }
+         
+            //3rd stage
+            if (nvar ==3) {
+                dt = dt_from_CFL(dt0, nx, ndegr, u_tmp);
+            }
+            CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
+            SemiImplicitSolve(nx, ndegr, nvar, dx, u_tmp, Dmatrix, dt, dudt);
+            for (int i=0; i<nu; i++){
+                u[i] = (1.0/3.0)*u[i] + (2.0/3.0)*(u_tmp[i]);
+            }
+        }
+
+        if (timestepping == -999) { //abandoned for now
+            // butcher tableau for the implicit method (kennedy DIRK methods for ode a review, 2016, p73)
+            // 0  |  0         0    0
+            // 2g |  g         g    0
+            // c3 |  c3-a32-g  a32  g
+            //       1-b2-b3   b2   b3
+            // What to do for explicit portion?? - need to adjust coeffs to maintain consistency or something like that
+            //
+            double g,c3,a32,b1,b2,b3,t2,t3;
+            g = (3.0 + sqrt(3.0)) / 6.0;
+            c3 = 1.0; // 1.0=stiffly accurate, 
+            // other options: internal stability:(3+sqrt(3))/3 - sqrt((2+sqrt(3))/3),  min error:(15+7sqrt(3))/(12(2+sqrt(3)))
+            a32 = c3*(c3-2*g)/(4*g);
+            b2 = (-2.0+3*c3)/(12*(c3-2*g)*g);
+            b3 = (1.0-3*g)/(3*c3*(c3-2*g));
+            b1 = 1.0 - b2 - b3;
+            //
+            // Algorithm Sketch fuly implicit ODE
+            // F1 = F[t0        , u0                                    ]
+            // F2 = F[t0 + 2g*dt, u0+dt*g*(F1 + F2)                     ]
+            // F3 = F[t0 + c3*dt, u0+dt*((c3-a32-g)*F1 + a32*F2 + g*F3) ]
+            // uout = u + dt*(b1*F1 + b2*F2 + b3*F3);
+            //
+            // Algorithm Sketch PDE with linear expansion of implicit terms
+            // FN = delta_u/(delta_t*??) <- cN or bN?
+            // F1 = F[t0        , u0                                    ]
+            // F2 = F[t0 + 2g*dt, u0+dt*g*(2*F1 + dF/du|1*delta_u|2)    ]
+            // F3 = F[t0 + c3*dt, u0+dt*((c3-a32-g)*F1 + a32*dFdu|1*delta_u|3+2 + g*dFdu|2*delta_u|3) ]
+            // uout = u + dt*(b1*F1 + b2*F2 + b3*F3);
+            //
+            
+        }
+        
+        if (nvar ==3) {
+          if (iter % 1 == 0){printf("iter:%10d\tdt:%7.2e\n",iter, dt);}
+        }else{
+          if (iter % 1 == 0){printf("iter:%10d\t%7.2f%% Complete\n",iter, 100.0*(double)iter/(double)niter);}
+        }
     }
 
     printf("iter=%d\tdt=%f\n", niter, dt);
 
-    //Printout Final Solution
+    //Printout Solution
     FILE* fout = fopen("waveout.tec", "w");
-    fprintf(fout, "x\tu\tu0\n");
+    if (nvar == 3) {
+      fprintf(fout, "x\trho\trhou\trhoe\tp\tc\tM\n");
+    } else {
+      fprintf(fout, "x\tu\tu0\n");
+    }
 
     for (int i=0;i<nx;i++) {
         for (int j=0; j<max(ndegr,2); j++) {
@@ -156,7 +272,7 @@ int main() {
                         u[iu3(i, j, 2, ndegr)]);
 
                 double rho, v, p, c, M;
-                getPrimativesPN(GAM, &u[iu3(i, j, 0, ndegr)], &rho, &v, &p, &c, &M);
+                getPrimativesPN(gam, &u[iu3(i, j, 0, ndegr)], &rho, &v, &p, &c, &M);
 
                 fprintf(fout, "%f\t%f\t%f\n", p, c, M);
             }
