@@ -304,26 +304,6 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double dx, do
     DiscontinuousStateDeriv(nx, np, ndegr, nvar, ucorr_x, Dmatrix, ucx_xi);
     */
 
-
-    /*
-    //anti-source
-    for (int ielem=1; ielem<nx-1; ielem++) {
-        double uLL, uLR, uRR, uRL, duL, duR;
-
-        uLL = u[iu3(ielem-1, 1 , 0, ndegr)];
-        uLR = u[iu3(ielem,   0 , 0, ndegr)];
-        uRR = u[iu3(ielem+1, 0 , 0, ndegr)];
-        uRL = u[iu3(ielem,   1 , 0, ndegr)];
-
-        duL = uLR - uLL;
-        duR = uRR - uRL;
-        //need to do upwinding to determine the magnitude of flux contribution, for now we know it is a left-moving wave
-        //so duR can be neglected
-
-        fcorr_xi[iu3(ielem, 0, 0, ndegr)] += -0.0*A*duL;
-        fcorr_xi[iu3(ielem, 1, 0, ndegr)] +=  0.0*A*duL;
-    }*/
-
     for (int ielem=0; ielem<nx; ielem++) {
         for (int inode=0; inode<ndegr ;inode++) {
             for (int kvar = 0; kvar<nvar; kvar++) {

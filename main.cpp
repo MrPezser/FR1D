@@ -6,6 +6,11 @@
 #include "EulerFlux.h"
 #include "SpatialDiscretization.h"
 #include "initial.h"
+#include "Implicit.h"
+
+#define EEULER (1)
+#define TVDRK3 (3)
+#define SEMIIMP (0)
 
 using namespace std;
 
@@ -18,18 +23,22 @@ void veccopy(double* a, const double* b, size_t n){
 
 int main() {
     ///hardcoded inputs
-    int     nx = 2;           //Number of elements, nx+1 points
+    int     nx = 100;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int ndegr = 20;             //Degrees of freedom per element
+    int ndegr = 7;             //Degrees of freedom per element
     int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
 
-    double cfl = 0.4/(ndegr*ndegr);          //CFL Number
+    double cfl = 2.0/(ndegr*ndegr);          //CFL Number
 
-    double tmax = 10.4;
+    double tmax = 1.0;
     double dt = (cfl * dx); // /a;
     int niter = ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax //10*3*80
+    
+    int timestepping = TVDRK3;
+    timestepping = SEMIIMP;
+    //timestepping = EEULER;
 
     //Find the solution points in reference space
     auto* xi = (double*)malloc(ndegr*sizeof(double));
@@ -69,34 +78,54 @@ int main() {
 
     veccopy(u0,u,nu);
 
-    // Begin Time Marching (3 stage TVD RK)
+    // Begin Time Marching 
     auto* u_tmp = (double*)malloc(nu*sizeof(double));
 
     for (int iter=0; iter<niter; iter++){
         veccopy(u_tmp, u, nu);
-        //1st stage
-        CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
-        for (int i=0; i<nu; i++){
-            //u_tmp[i] += dt * dudt[i];
-            u[i] += dt * dudt[i];
 
-            if (isnan(u[i])){
-                throw overflow_error("Kaboom!\n");
+        if (timestepping == EEULER) {
+            //1st stage
+            CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
+            for (int i=0; i<nu; i++){
+                //u_tmp[i] += dt * dudt[i];
+                u[i] += dt * dudt[i];
+       
+                if (isnan(u[i])){
+                    throw overflow_error("Kaboom!\n");
+                }
             }
         }
 
-
-
-        //2nd stage
-        CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
-        for (int i=0; i<nu; i++){
-            u_tmp[i] = 0.75*u[i] + 0.25*( u_tmp[i] + dt*dudt[i]);
+        if (timestepping == TVDRK3) {
+            //1st stage
+            CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
+            for (int i=0; i<nu; i++){
+                u_tmp[i] += dt * dudt[i];
+        
+                if (isnan(u[i])){
+                    throw overflow_error("Kaboom!\n");
+                }
+            }
+            //2nd stage
+            CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
+            for (int i=0; i<nu; i++){
+                u_tmp[i] = 0.75*u[i] + 0.25*( u_tmp[i] + dt*dudt[i]);
+            }
+         
+            //3rd stage
+            CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
+            for (int i=0; i<nu; i++){
+                u[i] = (1.0/3.0)*u[i] + (2.0/3.0)*(u_tmp[i] + dt*dudt[i]);
+            }
         }
 
-        //3rd stage
-        CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
-        for (int i=0; i<nu; i++){
-            u[i] = (1.0/3.0)*u[i] + (2.0/3.0)*(u_tmp[i] + dt*dudt[i]);
+        if (timestepping == SEMIIMP) {
+            // Do regular explicit euler, but with implicit discontinuous flux
+            CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
+            //
+            // Implicit Solve
+            SemiImplicitSolve(nx, ndegr, nvar, dx, u, Dmatrix, dt, dudt);
         }
 
         if (iter % 100 == 0){printf("iter:%10d\t%7.2f%% Complete\n",iter, 100.0*(double)iter/(double)niter);}

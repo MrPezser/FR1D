@@ -9,25 +9,26 @@ double Initialize(double x){
 
     if (x < 0.6) {
         double beta = 0.005;
-        return 1.0;// + exp(-(x-0.3)*(x-0.3) / beta);
+        return 1.0 + exp(-(x-0.3)*(x-0.3) / beta);
     } else {
-        if (x < 0.8) {
-            return 2.0;
-        } else {
+        //if (x < 0.8) {
+        //    return 2.0;
+        //} else {
             return 1.0;
-        }
+        //}
     }
+    return 0.0;
 
 
     //return 2.0 + sin(2.0*M_PI*x);
 
     //return 1.0 + exp(-40*(x-0.5)*(x-0.5));
 
-    if (x<0.5){
-        return 1.0;
-    } else {
-        return 0.0;
-    }
+    //if (x<0.5){
+    //    return 1.0;
+    //} else {
+    //    return 0.0;
+    //}
 }
 
 void InitializeEuler(double x, double* u){

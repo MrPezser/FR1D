@@ -1,3 +1,0 @@
-/home/tsk/Documents/GitHub/FR1D/cmake-szarch/CMakeFiles/FR1D.dir
-/home/tsk/Documents/GitHub/FR1D/cmake-szarch/CMakeFiles/edit_cache.dir
-/home/tsk/Documents/GitHub/FR1D/cmake-szarch/CMakeFiles/rebuild_cache.dir

@@ -1,3 +1,0 @@
-C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/CMakeFiles/FR1D.dir
-C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Tsail/OneDrive/Documents/Projects/CFD/1D_PDE/FR1D/cmake-build-debug/CMakeFiles/rebuild_cache.dir

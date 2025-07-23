@@ -1,0 +1,10 @@
+(P3 = ndegr 4) : CFL / N^2   -> Highest before oscilations form
+Exp Euler : 0.3   ()
+Semi Imp  : 1.5
+TVDRK3    : 2.0
+
+
+P6, ndegr=7, : CFL * N^2
+Explicit : 0.1
+TVDRK3   : 2.5
+SemiImp  : 1.75

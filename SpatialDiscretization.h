@@ -2,6 +2,10 @@
 // Created by Tsail on 7/26/2023.
 //
 
+
+#ifndef FR1D_SPATIALDISCRETIZATION_H
+#define FR1D_SPATIALDISCRETIZATION_H
+
 #include "indexing.h"
 #include "EulerFlux.h"
 #include <cmath>
@@ -12,10 +16,7 @@
 #define A (1.0)
 #define FACEFLUX(a, b, c) AdvectionFaceFlux(a, b, c) //LeerFlux(GAM, a, b, c)
 #define FLUX(a,b)  AdvectionFlux(a, b)  //EulerFlux(GAM, a, b)
-
-#ifndef FR1D_SPATIALDISCRETIZATION_H
-#define FR1D_SPATIALDISCRETIZATION_H
-
+//
 void CalcDudt(int nx, int ndegr, int nvar, double dx, double* u, const double* Dmatrix, const double* Dradau, double* dudt );
 
 #endif //FR1D_SPATIALDISCRETIZATION_H
