@@ -45,6 +45,10 @@ void EulerFlux(double gam, const double *u, double* flux){
     flux[1] = (u[1]*v) + p;
     flux[2] = v * (u[2] + p);
 
+    //ASSERT(!__isnan(flux[0]),"nan euler flux")
+    //ASSERT(!__isnan(flux[1]),"nan euler flux")
+    //ASSERT(!__isnan(flux[2]),"nan euler flux")
+
 }
 
 void RoeFDS(double gam, const double* uL, const double *uR, double* roeFlux){

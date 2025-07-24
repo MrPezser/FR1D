@@ -52,18 +52,19 @@ int main() {
     int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
 
-    double cfl = 1.0/(ndegr*ndegr);          //CFL Number
+    double cfl = 0.1/(ndegr*ndegr);          //CFL Number
 
-    double tmax = 0.6;
+    double tmax = 0.2;
     double dt = (cfl * dx); // /a;
     double dt0 = dt;
     int niter = ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax //10*3*80
+    int mxiter = 1e6;
 
     double gam = 1.4;//warning, not global
     
     int timestepping = TVDRK3;
     //timestepping = SEMIIMP;
-    //timestepping = SITVDRK3;
+    timestepping = SITVDRK3;
     //timestepping = EEULER;
 
     //Find the solution points in reference space
@@ -109,13 +110,16 @@ int main() {
 
     // Begin Time Marching 
     auto* u_tmp = (double*)malloc(nu*sizeof(double));
+    
+    double soltime = 0.0;
 
-    for (int iter=0; iter<niter; iter++){
+    for (int iter=0; iter<mxiter; iter++){
+        if (nvar ==3) {
+            dt = dt_from_CFL(dt0, nx, ndegr, u);
+        }
+        soltime += dt;
 
         if (timestepping == EEULER) {
-            if (nvar ==3) {
-                dt = dt_from_CFL(dt0, nx, ndegr, u);
-            }
             //1st stage
             CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
             for (int i=0; i<nu; i++){
@@ -131,9 +135,6 @@ int main() {
         if (timestepping == TVDRK3) {
             veccopy(u_tmp, u, nu);
             //1st stage
-            if (nvar ==3) {
-                dt = dt_from_CFL(dt0, nx, ndegr, u);
-            }
             CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
             for (int i=0; i<nu; i++){
                 u_tmp[i] += dt * dudt[i];
@@ -142,29 +143,23 @@ int main() {
                     throw overflow_error("Kaboom!\n");
                 }
             }
+            LimitSolution(nx, ndegr, nvar, u_tmp);
             //2nd stage
-            if (nvar ==3) {
-                dt = dt_from_CFL(dt0, nx, ndegr, u_tmp);
-            }
             CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
             for (int i=0; i<nu; i++){
                 u_tmp[i] = 0.75*u[i] + 0.25*( u_tmp[i] + dt*dudt[i]);
             }
+            LimitSolution(nx, ndegr, nvar, u_tmp);
          
             //3rd stage
-            if (nvar ==3) {
-                dt = dt_from_CFL(dt0, nx, ndegr, u_tmp);
-            }
             CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
             for (int i=0; i<nu; i++){
                 u[i] = (1.0/3.0)*u[i] + (2.0/3.0)*(u_tmp[i] + dt*dudt[i]);
             }
+            LimitSolution(nx, ndegr, nvar, u);
         }
 
         if (timestepping == SEMIIMP) {
-            if (nvar ==3) {
-                dt = dt_from_CFL(dt0, nx, ndegr, u);
-            }
             // Do regular explicit euler, but with implicit discontinuous flux
             CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
             //
@@ -175,32 +170,26 @@ int main() {
         if (timestepping == SITVDRK3) {
             veccopy(u_tmp, u, nu);
             //1st stage
-            if (nvar ==3) {
-                dt = dt_from_CFL(dt0, nx, ndegr, u_tmp);
-            }
             CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
             // Implicit Solve
             SemiImplicitSolve(nx, ndegr, nvar, dx, u_tmp, Dmatrix, dt, dudt);
+            LimitSolution(nx, ndegr, nvar, u_tmp);
 
             //2nd stage
-            if (nvar ==3) {
-                dt = dt_from_CFL(dt0, nx, ndegr, u_tmp);
-            }
             CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
             SemiImplicitSolve(nx, ndegr, nvar, dx, u_tmp, Dmatrix, dt, dudt);
             for (int i=0; i<nu; i++){
                 u_tmp[i] = 0.75*u[i] + 0.25*(u_tmp[i]);
             }
+            LimitSolution(nx, ndegr, nvar, u_tmp);
          
             //3rd stage
-            if (nvar ==3) {
-                dt = dt_from_CFL(dt0, nx, ndegr, u_tmp);
-            }
             CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
             SemiImplicitSolve(nx, ndegr, nvar, dx, u_tmp, Dmatrix, dt, dudt);
             for (int i=0; i<nu; i++){
                 u[i] = (1.0/3.0)*u[i] + (2.0/3.0)*(u_tmp[i]);
             }
+            LimitSolution(nx, ndegr, nvar, u);
         }
 
         if (timestepping == -999) { //abandoned for now
@@ -237,10 +226,49 @@ int main() {
         }
         
         if (nvar ==3) {
-          if (iter % 1 == 0){printf("iter:%10d\tdt:%7.2e\n",iter, dt);}
+          if (iter % 1 == 0){printf("iter:%10d\tdt:%7.2e\t%7.2f%% Complete\n",iter, dt, 100.0*soltime/tmax);}
         }else{
-          if (iter % 1 == 0){printf("iter:%10d\t%7.2f%% Complete\n",iter, 100.0*(double)iter/(double)niter);}
+          if (iter % 1 == 0){printf("iter:%10d\t%7.2f%% Complete\n",iter, 100.0*soltime/tmax);}
         }
+        if (soltime >= tmax) {break;}
+
+
+    //Printout Solution
+    FILE* fout = fopen("waveout.tec", "w");
+    if (nvar == 3) {
+      fprintf(fout, "x\trho\trhou\trhoe\tp\tc\tM\n");
+    } else {
+      fprintf(fout, "x\tu\tu0\n");
+    }
+
+    for (int i=0;i<nx;i++) {
+        for (int j=0; j<max(ndegr,2); j++) {
+            double xj;
+
+            if (nvar == 1) {
+                if (ndegr == 1) {
+                    double xii = -1.0 + 2.0 * j;
+                    xj = x[i] + xii * (0.5 * dx);
+                    fprintf(fout, "%f\t%f\n", xj, u[iu3(i, 0, 0, ndegr)]);
+                } else {
+                    xj = x[i] + xi[j] * (0.5 * dx);
+                    fprintf(fout, "%f\t%f\n", xj, u[iu3(i, j, 0, ndegr)]);
+                }
+            } else {
+                xj = x[i] + xi[j] * (0.5 * dx);
+                fprintf(fout, "%f\t%f\t%f\t%f\t", xj, u[iu3(i, j, 0, ndegr)], u[iu3(i, j, 1, ndegr)],
+                        u[iu3(i, j, 2, ndegr)]);
+
+                double rho, v, p, c, M;
+                getPrimativesPN(gam, &u[iu3(i, j, 0, ndegr)], &rho, &v, &p, &c, &M);
+
+                fprintf(fout, "%f\t%f\t%f\n", p, c, M);
+            }
+        }
+    }
+
+    fclose(fout);
+
     }
 
     printf("iter=%d\tdt=%f\n", niter, dt);

@@ -22,12 +22,10 @@ void BuildJacobian(
         for (int j=0; j<ld; j++){
             D[i][j] = 0.0;
         }
+        D[i][i] = dti;
     }
 
     if (nvar ==3) {
-        for (int ii=0; ii<ld; ii++){
-            D[ii][ii] = dti;
-        }
         //
         for (int idegr=0; idegr<ndegr; idegr++){
         for (int jdegr=0; jdegr<ndegr; jdegr++){
@@ -40,17 +38,50 @@ void BuildJacobian(
             //
             // calculate dfj/duj
             double df1du1, df2du1, df3du1, df1du2, df2du2, df3du2, df1du3, df2du3, df3du3;
-            df1du1 = v;
+            double flux[nvar], fluxp1[nvar], fluxp2[nvar], fluxp3[nvar];
+            // Numerical difference to get flux derivative
+            EulerFlux(gam, uj, flux);
+            //
+            double utest[nvar];
+            utest[0] = uj[0]*(1.0+1.0e-8);
+            utest[1] = uj[1];
+            utest[2] = uj[2];
+            EulerFlux(gam, utest, fluxp1);
+            //
+            utest[0] = uj[0];
+            utest[1] = uj[1]*(1.0+1.0e-8) + 1.0e-16;
+            utest[2] = uj[2];
+            EulerFlux(gam, utest, fluxp2);
+            //
+            utest[0] = uj[0];
+            utest[1] = uj[1];
+            utest[2] = uj[2]*(1.0+1.0e-8);
+            EulerFlux(gam, utest, fluxp3);
+            //
+            df1du1 = (fluxp1[0]-flux[0])/(uj[0]*1.0e-8);
+            df1du2 = (fluxp2[0]-flux[0])/(uj[1]*1.0e-8 + 1.0e-16);
+            df1du3 = (fluxp3[0]-flux[0])/(uj[2]*1.0e-8);
+            //
+            df2du1 = (fluxp1[1]-flux[1])/(uj[0]*1.0e-8);
+            df2du2 = (fluxp2[1]-flux[1])/(uj[1]*1.0e-8 + 1.0e-16);
+            df2du3 = (fluxp3[1]-flux[1])/(uj[2]*1.0e-8);
+            //
+            df3du1 = (fluxp1[2]-flux[2])/(uj[0]*1.0e-8);
+            df3du2 = (fluxp2[2]-flux[2])/(uj[1]*1.0e-8 + 1.0e-16);
+            df3du3 = (fluxp3[2]-flux[2])/(uj[2]*1.0e-8);
+            /*
+            df1du1 = 0.0; // v
             df1du2 = 1.0;
             df1du3 = 0.0;
             //
-            df2du1 = v*v + p/rho;
-            df2du2 = (3.0 - gam) * v;
+            df2du1 = p/rho; // + v*v
+            df2du2 = v; //(3.0 - gam) * v;
             df2du3 = gam-1.0;
             //
-            df3du1 = v * (uj[2]+p) / rho;
-            df3du2 = (gam*uj[2]/rho) + ((gam-1.0)/2.0)*v*v;
+            df3du1 = v * (p) / rho; // + v*uj[2]/rho
+            df3du2 = (uj[2] + p) / rho;//(gam*uj[2]/rho) + ((gam-1.0)/2.0)*v*v;
             df3du3 = gam*v;
+            */
             //
             // Use FR to transform to dfi/duj
             int ii = iup(idegr,0,nvar);

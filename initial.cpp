@@ -39,17 +39,17 @@ void InitializeEuler(double x, double* u){
 
     rho = Initialize(x);
 
-    /*
+    
     if (x < 0.5){
         rho = 1.0;
-        v = 0.0;
+        v = 0.01;
         p = 1.0;
     } else {
         rho = 0.125;
-        v = 0.0;
-        p = rho;
+        v = 0.01;
+        p = 0.1;
     }
-    */
+    
 
 
     u[0] = rho;                             //rho

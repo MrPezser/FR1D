@@ -9,6 +9,9 @@
 #include "indexing.h"
 #include "EulerFlux.h"
 
+#define RHOLIMIT (1e-2)
+#define ELIMIT (1e-2)
+
 double AdvectionFaceFlux(const double a, const double uL, const double uR) {
     /// Finds the upwind flux according to the 1D advection equation
     ///a = wave speed | uL & uR are the left and right state variables
@@ -37,9 +40,9 @@ void FluxFaceCorrection(int nx, int ndegr, int nvar, double* u, const double* Dr
         ielem = iface;
         if (iface == nx-1) {
             //extrapolation boundary condition
-            //iep1 = iface;
+            iep1 = iface;
             //periodic bc
-            iep1 = 0;
+            //iep1 = 0;
         } else {
             //Interior Cell
             iep1 = iface+1;
@@ -47,7 +50,7 @@ void FluxFaceCorrection(int nx, int ndegr, int nvar, double* u, const double* Dr
 
         //Calculate the common flux at the face
         if (nvar == 3){
-            RoeFDS(gam,&u[iu3(ielem, ndegr-1, 0, ndegr)], &u[iu3(iep1, 0, 0, ndegr)], common_flux);
+            LeerFlux(gam,&u[iu3(ielem, ndegr-1, 0, ndegr)], &u[iu3(iep1, 0, 0, ndegr)], common_flux);
         }else{
             common_flux[0] = AdvectionFaceFlux(A, u[iu3(ielem, ndegr-1, 0, ndegr)], u[iu3(iep1, 0, 0, ndegr)]);
         }
@@ -145,7 +148,7 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double dx, do
         for (int inode=0; inode<ndegr ;inode++) {
             for (int kvar = 0; kvar<nvar; kvar++) {
                 //convert from the reference element to the real element and negate to put make it dudt (= -f_x)
-                dudt[iu3(ielem, inode, kvar, ndegr)] += -(2/ dx) * (fcorr_xi[iu3(ielem,  inode, kvar, ndegr)] - MU*ucx_xi[iu3(ielem,  inode, kvar, ndegr)]);
+                dudt[iu3(ielem, inode, kvar, ndegr)] += -(2/ dx) * (fcorr_xi[iu3(ielem,  inode, kvar, ndegr)]);
 
                /* //fix end points for shock-tube like problem
                if (ielem == 0 || ielem == nx-1){
@@ -153,10 +156,99 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double dx, do
                }*/
 
                 if (__isnan(dudt[iu3(ielem, inode, kvar, ndegr)])){
+                    printf("ielem:%d \tinode:%d \tkvar:%d\n", ielem, inode, kvar);
                     throw std::overflow_error("dudt NAN\n");
                 }
             }
         }
+    }
+
+}
+
+bool IsBad(double* u) {
+    if (u[0] < RHOLIMIT) {return true;}
+
+    double p = (GAM - 1) * (u[2] - (0.5 * u[1] * u[1] / u[0]));
+    if (u[2] < ELIMIT) {return true;}
+
+    return false;
+}
+
+void LimitSolution(int nelem, int ndegr, int nvar, double* u) {
+    // Limit by scaling
+    // Setp 1: Find cell average (NOTE TO ADD WEIGHTING TO SOLPTS)
+    // Step 2: Find the ratio: RR = (rmin-rlim)/(rbar-rmin)
+    // Step 3: Set r = rbar + RR
+    // Recalculate
+    // Step 4:If Still bad, repeat with energy
+    bool badcell;
+
+    for (int ielem=0; ielem<nelem; ielem++) {
+        double *ui,rhomin,emin;
+        ui = &(u[iu3(ielem,0,0,ndegr)]);
+        rhomin = FP_NAN;
+        
+        // Step -1 - find bad cells
+        badcell = false;
+        for (int jdegr=0; jdegr<ndegr; jdegr++){
+            badcell = IsBad(ui+jdegr*nvar) or badcell;
+            //
+            if (badcell && rhomin==FP_NAN){
+                rhomin = (ui+jdegr*nvar)[0];
+            } else if (badcell){
+                rhomin = fmin(rhomin,(ui+jdegr*nvar)[0]);
+            }
+            //
+        }
+        if (not badcell) {continue;}
+        // Step 1: Find cell average rho
+        double rhoave = 0.0;
+        // Currently doing the stupid thing of equal weighting
+        // This assumption starts out okay but gets very bad for higher orders
+        for (int jdegr=0; jdegr<ndegr; jdegr++){
+            rhoave += (ui+jdegr*nvar)[0] / (ndegr);
+        }
+        ASSERT(rhoave >= RHOLIMIT, "average density below limit")
+        // Step 2 - calculate RR
+        double rr = (rhoave-RHOLIMIT) / (rhoave-rhomin);
+        //
+        // Step 3 - SQUASH ALL RESISTANCE
+        for (int jdegr=0; jdegr<ndegr; jdegr++){
+            (ui+jdegr*nvar)[0] = fmax(RHOLIMIT, rhoave  + ((ui+jdegr*nvar)[0] - rhoave) * rr);
+        }
+        //
+        // ==================================================  Recheck if cell bad
+        badcell = false;
+        for (int jdegr=0; jdegr<ndegr; jdegr++){
+            badcell = IsBad(ui+jdegr*nvar) or badcell;
+            //
+            if (badcell && rhomin==FP_NAN){
+                emin = (ui+jdegr*nvar)[2];
+            } else if (badcell){
+                emin = fmin(rhomin,(ui+jdegr*nvar)[2]);
+            }
+            //
+        }
+        if (not badcell) {continue;}
+        //
+        double eave = 0.0;
+        for (int jdegr=0; jdegr<ndegr; jdegr++){
+            eave += (ui+jdegr*nvar)[2] / (ndegr);
+        }
+        ASSERT(eave >= ELIMIT, "average energy below limit")
+        double er = (eave-ELIMIT) / (eave-emin);
+        //
+        for (int jdegr=0; jdegr<ndegr; jdegr++){
+            (ui+jdegr*nvar)[2] = fmax(ELIMIT, eave  + ((ui+jdegr*nvar)[2] - eave) * er);
+        }
+        //
+        badcell = false;
+        for (int jdegr=0; jdegr<ndegr; jdegr++){
+            badcell = IsBad(ui+jdegr*nvar) or badcell;
+            if (badcell) {printf("u:%e,  %e,  %e\n",(ui+jdegr*nvar)[0],(ui+jdegr*nvar)[1],(ui+jdegr*nvar)[2]);}
+            //
+        }
+        ASSERT(not badcell, "the cell is not fixed dummy");        
     }
 
 }
