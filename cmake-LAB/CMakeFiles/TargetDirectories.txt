@@ -1,3 +1,0 @@
-/home/tsk/Documents/CFD/FR1D/cmake-LAB/CMakeFiles/FR1D.dir
-/home/tsk/Documents/CFD/FR1D/cmake-LAB/CMakeFiles/edit_cache.dir
-/home/tsk/Documents/CFD/FR1D/cmake-LAB/CMakeFiles/rebuild_cache.dir

@@ -183,41 +183,12 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
         //Dradau[ipoin] = - 0.5 * M_PI_2 * cos(x[ipoin]*M_PI_2);
         //Dradau[ipoin+ndegr] = 0.5 * (- sin(x[ipoin]*M_PI_2) + 1.0);
 
-        Dradau[ipoin] = -0.5 * gorder * pow(0.5*(1-x[ipoin]), gorder-1); //derivatives
+        //Dradau[ipoin] = -0.5 * gorder * pow(0.5*(1-x[ipoin]), gorder-1); //derivatives
         //Dradau[ipoin+ndegr] = pow(0.5*(1-x[ipoin]), gorder);//function values
 
         //Dradau[ipoin] = 0.0;
         //Dradau[ipoin+ndegr] = 0.0;
     }
-    //Dradau[0] = -2.0 / (x[1]-x[0]);
-    //Dradau[0+ndegr] = 1.0;
-    //return;
-
-
-    if (ndegr==2){
-<<<<<<< Updated upstream
-        Dradau[0] = -2.5;//-2.75;//-2.0
-        Dradau[1] = 0.0;// 1.0
-        //return;
-    }
-
-    //Monotone of the 2nd kind
-    if (ndegr==3){
-        Dradau[0] = -5.0;//-1.28821;
-        Dradau[1] = 0.5;//-0.427948;
-        Dradau[2] = 0.0;//-0.0;
-        //return;
-    }
-
-
-=======
-        //Dradau[0] = -2.0;//-2.75;
-        //Dradau[1] =  -1.0;//-0.5;
-        //Dradau[2] = 1.0;
-        //Dradau[3] = 0.0;
-    }
-    //return;
->>>>>>> Stashed changes
 
     //Get coefficients of the p_k and p_k-1 legendre polynomials
     auto* coeffpk   = (double*)malloc((ndegr+1)*sizeof(double));
@@ -228,7 +199,7 @@ void GenerateRadauDerivatives(int ndegr, const double *x, double* Dradau){
     LegendreCoefficients(ndegr-1, coeffpkm1);
 
 
-    int ISLOPE = 1;
+    int ISLOPE = 0;
     double s = -0.5;
     double a = s;
     double b = -(1.0 + 1.0/s);
