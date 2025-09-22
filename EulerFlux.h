@@ -10,6 +10,7 @@
 void EulerFlux(double gam, const double *u, double* flux);
 void RoeFDS(double gam, const double* uL, const double *uR, double* roeFlux);
 void LeerFlux(double gam, const double* uL, const double* uR, double *flux);
+void LDFSS(double gam, const double* uL, const double* uR, double *flux);
 void getPrimativesPN(double gam, const double *unkel, double *rho, double *v, double *p, double *c, double *M);
 
 

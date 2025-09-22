@@ -50,7 +50,64 @@ void EulerFlux(double gam, const double *u, double* flux){
     //ASSERT(!__isnan(flux[2]),"nan euler flux")
 
 }
+//////////////////
+void LDFSS(double gam, const double* uL, const double* uR, double* flux) {
 
+//--------------------------------------------------------------------
+//----- inviscid flux contribution (LDFSS)
+// --------------------------------------------------------------------
+    //unk = [rho, u, T]
+    double rhoL, vL, pL, cL, mL;
+    getPrimativesPN(gam, uL, &rhoL, &vL, &pL, &cL, &mL);
+
+    double rhoR, vR, pR, cR, mR;
+    getPrimativesPN(gam, uR, &rhoR, &vR, &pR, &cR, &mR);
+
+    double hL = (uL[2]+pL) / uL[0];
+    double hR = (uR[2]+pR) / uR[0];
+
+    double ahalf = 0.5 * (cL + cR);
+
+    // Flux Calculation
+    double xml = uL[1]/(uL[0]*ahalf);
+    double xmr = uR[1]/(uR[0]*ahalf);
+
+    double all = 0.5*(1.0 + sign(xml));
+    double alr = 0.5*(1.0 - sign(xmr));
+
+    double btl = -fmax(0.0,1.0-double(int(fabs(xml))));
+    double btr = -fmax(0.0,1.0-double(int(fabs(xmr))));
+
+    double xmml =  0.25*(xml+1.0)*(xml+1.0);
+    double xmmr = -0.25*(xmr-1.0)*(xmr-1.0);
+
+    double xmhalf = sqrt(0.5*(xml*xml + xmr*xmr));
+    double xmc = 0.25*btl*btr*(xmhalf - 1.0)*(xmhalf - 1.0);
+
+    double delp = pL - pR;
+    double psum = pL + pR;
+
+    double xmcp = xmc * fmax(0.0,(1.0 - (delp/psum + 2.0*fabs(delp)/pL)));
+    double xmcm = xmc * fmax(0.0,(1.0 + (delp/psum - 2.0*fabs(delp)/pR)));
+    double cvlp = all*(1.0+btl)*xml - btl*xmml;
+    double cvlm = alr*(1.0+btr)*xmr - btr*xmmr;
+    double cep = cvlp - xmcp;
+    double cem = cvlm + xmcm;
+
+    double fml = uL[0]*ahalf*cep;
+    double fmr = uR[0]*ahalf*cem;
+
+    double ppl = 0.25*(xml+1.0)*(xml+1.0)*(2.0-xml);
+    double ppr = 0.25*(xmr-1.0)*(xmr-1.0)*(2.0+xmr);
+
+    double pnet = (all*(1.0+btl) - btl*ppl)*pL
+                + (alr*(1.0+btr) - btr*ppr)*pR;
+
+    flux[0] = fml       + fmr;                     //continuity
+    flux[1] = fml*uL[1] + fmr*uR[1] + pnet;        //x momentum
+    flux[2] = fml*hL   + fmr*hR;                 //total energy
+}
+//////
 void RoeFDS(double gam, const double* uL, const double *uR, double* roeFlux){
 
     double rhoL, vL, pL, cL, ML;
@@ -146,7 +203,7 @@ double F1pm(const int isPlus, const double M, const double rho, const double c){
         if (M>=1.0) {
             return rho * M * c;
         }
-        return 0.25*rho*c*(M+1)*(M+1);
+        return 0.25 * rho * c * (M + 1) * (M + 1);
     }
 
     if (isPlus==0) {
@@ -176,13 +233,14 @@ void LeerFlux(double gam, const double* uL, const double* uR, double *flux){
     double rhoR, vR, pR, cR, MR;
     getPrimativesPN(gam, uR, &rhoR, &vR, &pR, &cR, &MR);
 
+    double MM = 0.5 * (ML + MR);
 
-    if (ML >= 1.0){
+    if (MM >= 1.0){
         EulerFlux(gam, uL, flux);
         return;
     }
 
-    if (MR <= -1.0){
+    if (MM <= -1.0){
         EulerFlux(gam, uR, flux);
         return;
     }
@@ -195,13 +253,13 @@ void LeerFlux(double gam, const double* uL, const double* uR, double *flux){
     }
 
     fPlus[0] = F1L;
-    double A = ((gam - 1) * vL) + (2.0 * cL); //vL
+    double A = (((gam - 1) * vL) + (2.0 * cL)); //vL
     fPlus[1] = F1L * A / gam;
     fPlus[2] = F1L * A*A * 0.5 / (gam*gam - 1.0);
 
 
     fMins[0] = F1R;
-    A = -((gam - 1) * vL) - (2.0 * cR); //vR
+           A = (((gam - 1) * vR) - (2.0 * cR)); //vR
     fMins[1] = F1R * A / gam;
     fMins[2] = F1R * A*A * 0.5 / (gam*gam - 1.0);
 

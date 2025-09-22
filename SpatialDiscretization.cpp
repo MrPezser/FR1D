@@ -4,6 +4,7 @@
 #include "SpatialDiscretization.h"
 
 #include <cmath>
+#include <cstring>
 #include <stdexcept>
 
 #include "indexing.h"
@@ -50,7 +51,8 @@ void FluxFaceCorrection(int nx, int ndegr, int nvar, double* u, const double* Dr
 
         //Calculate the common flux at the face
         if (nvar == 3){
-            LeerFlux(gam,&u[iu3(ielem, ndegr-1, 0, ndegr)], &u[iu3(iep1, 0, 0, ndegr)], common_flux);
+            //LDFSS(gam, &u[iu3(ielem, ndegr-1, 0, ndegr)], &u[iu3(iep1, 0, 0, ndegr)], common_flux);
+            LeerFlux(gam, &u[iu3(ielem, ndegr-1, 0, ndegr)], &u[iu3(iep1, 0, 0, ndegr)], common_flux);
         }else{
             common_flux[0] = AdvectionFaceFlux(A, u[iu3(ielem, ndegr-1, 0, ndegr)], u[iu3(iep1, 0, 0, ndegr)]);
         }
@@ -59,6 +61,9 @@ void FluxFaceCorrection(int nx, int ndegr, int nvar, double* u, const double* Dr
         if (nvar == 3){
             EulerFlux(gam,&u[iu3(ielem , ndegr-1 , 0, ndegr)], &fL[0]);
             EulerFlux(gam,&u[iu3(iep1  , 0       , 0, ndegr)], &fR[0]);
+            //
+            //LDFSS(gam, &u[iu3(ielem , ndegr-1 , 0, ndegr)], &u[iu3(ielem , ndegr-1 , 0, ndegr)], &fL[0]);
+            //LDFSS(gam, &u[iu3(iep1  , 0       , 0, ndegr)], &u[iu3(iep1  , 0       , 0, ndegr)], &fR[0]);
         } else {
             fL[0] = AdvectionFlux(A, u[iu3(ielem, ndegr-1, 0, ndegr)]);
             fR[0] = AdvectionFlux(A, u[iu3(iep1 , 0      , 0, ndegr)]);
@@ -174,7 +179,37 @@ bool IsBad(double* u) {
     return false;
 }
 
+void StupidSmoothSolution(int nelem, int ndegr, int nvar, double* u) {
+    // dumb averaging based smoother, doesn't work well at all
+    // Smoothing strength
+    int nsmooth = 100000.0; //guessing
+    double ksmooth = 2.0 / nsmooth; // guessing
+    //
+    int npoin = nelem*ndegr;
+    double unew[npoin*NVAR];
+    // Apply diffusion kernel to all elements, ignoring first and last
+    for (int it=0; it<nsmooth; it++) {
+        for (int ip=0; ip<npoin; ip++){
+            //
+            double *ui = &u[ip*NVAR];
+            double *uim = &u[(ip-1)*NVAR];
+            double *uip = &u[(ip+1)*NVAR];
+            //
+            for (int k=0; k<NVAR; k++) {
+                if (ip==0 || ip==npoin-1) {
+                    unew[ip+k] = ui[k];
+                } else {
+                    unew[ip+k] = ((1.0-2.0*ksmooth)*ui[k] + ksmooth*(uim[k] + uip[k]));
+                }
+            }
+        }
+    memcpy(u,unew,npoin*NVAR*sizeof(double));
+    }
+
+}
+
 void LimitSolution(int nelem, int ndegr, int nvar, double* u) {
+    //return;
     // Limit by scaling
     // Setp 1: Find cell average (NOTE TO ADD WEIGHTING TO SOLPTS)
     // Step 2: Find the ratio: RR = (rmin-rlim)/(rbar-rmin)
@@ -206,8 +241,9 @@ void LimitSolution(int nelem, int ndegr, int nvar, double* u) {
         // Currently doing the stupid thing of equal weighting
         // This assumption starts out okay but gets very bad for higher orders
         for (int jdegr=0; jdegr<ndegr; jdegr++){
-            rhoave += (ui+jdegr*nvar)[0] / (ndegr);
+            rhoave += ui[jdegr*nvar] / (ndegr);
         }
+        //rhoave = fmax(rhoave, 1.5*RHOLIMIT);
         ASSERT(rhoave >= RHOLIMIT, "average density below limit")
         // Step 2 - calculate RR
         double rr = (rhoave-RHOLIMIT) / (rhoave-rhomin);
@@ -233,8 +269,9 @@ void LimitSolution(int nelem, int ndegr, int nvar, double* u) {
         //
         double eave = 0.0;
         for (int jdegr=0; jdegr<ndegr; jdegr++){
-            eave += (ui+jdegr*nvar)[2] / (ndegr);
+            eave += ui[jdegr*nvar + 2] / (ndegr);
         }
+        //eave = fmax(eave, 1.5*ELIMIT);
         ASSERT(eave >= ELIMIT, "average energy below limit")
         double er = (eave-ELIMIT) / (eave-emin);
         //

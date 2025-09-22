@@ -45,10 +45,10 @@ double dt_from_CFL(double dt0, int nelem, int ndegr, double* u){
 
 int main() {
     ///hardcoded inputs
-    int     nx = 100;           //Number of elements, nx+1 points
+    int     nx = 750;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int ndegr = 4;             //Degrees of freedom per element
+    int ndegr = 3;             //Degrees of freedom per element
     int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
 
@@ -64,7 +64,7 @@ int main() {
     
     int timestepping = TVDRK3;
     //timestepping = SEMIIMP;
-    timestepping = SITVDRK3;
+    //timestepping = SITVDRK3;
     //timestepping = EEULER;
 
     //Find the solution points in reference space
@@ -96,11 +96,11 @@ int main() {
                 InitializeEuler(x[i]+ xi[j]*(0.5 * dx), &u[iu3(i, j, 0, ndegr)]);
             } else {
 
-                if (x[i] > 0.6) {
-                    u[iu3(i, j, 0, ndegr)] = Initialize(x[i] + (0.0 * dx)); //enforce a sharp initial discon
-                } else {
+                //if (x[i] > 0.6) {
+                //    u[iu3(i, j, 0, ndegr)] = Initialize(x[i] + (0.0 * dx)); //enforce a sharp initial discon
+                //} else {
                     u[iu3(i, j, 0, ndegr)] = Initialize(x[i] + xi[j]*(0.5 * dx));
-                }
+                //}
             //Initialize(x[i] + xi[j]*(0.5 * dx));  //will allow a slop initial cond.
             }
         }
@@ -112,8 +112,11 @@ int main() {
     auto* u_tmp = (double*)malloc(nu*sizeof(double));
     
     double soltime = 0.0;
+    
+    //SmoothSolution(nx, ndegr, nvar, u);
 
     for (int iter=0; iter<mxiter; iter++){
+        //break;
         if (nvar ==3) {
             dt = dt_from_CFL(dt0, nx, ndegr, u);
         }
@@ -130,6 +133,9 @@ int main() {
                     throw overflow_error("Kaboom!\n");
                 }
             }
+            if (nvar ==3) {
+            LimitSolution(nx, ndegr, nvar, u);
+            }
         }
 
         if (timestepping == TVDRK3) {
@@ -142,21 +148,25 @@ int main() {
                 if (isnan(u[i])){
                     throw overflow_error("Kaboom!\n");
                 }
-            }
+            }if (nvar ==3) {
             LimitSolution(nx, ndegr, nvar, u_tmp);
+            }
             //2nd stage
             CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
             for (int i=0; i<nu; i++){
                 u_tmp[i] = 0.75*u[i] + 0.25*( u_tmp[i] + dt*dudt[i]);
             }
+            if (nvar ==3) {
             LimitSolution(nx, ndegr, nvar, u_tmp);
-         
+            }
             //3rd stage
             CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
             for (int i=0; i<nu; i++){
                 u[i] = (1.0/3.0)*u[i] + (2.0/3.0)*(u_tmp[i] + dt*dudt[i]);
             }
+            if (nvar ==3) {
             LimitSolution(nx, ndegr, nvar, u);
+            }
         }
 
         if (timestepping == SEMIIMP) {
@@ -231,7 +241,7 @@ int main() {
           if (iter % 1 == 0){printf("iter:%10d\t%7.2f%% Complete\n",iter, 100.0*soltime/tmax);}
         }
         if (soltime >= tmax) {break;}
-
+    //}
 
     //Printout Solution
     FILE* fout = fopen("waveout.tec", "w");
@@ -269,7 +279,7 @@ int main() {
 
     fclose(fout);
 
-    }
+    }//
 
     printf("iter=%d\tdt=%f\n", niter, dt);
 
