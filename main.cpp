@@ -45,12 +45,13 @@ double dt_from_CFL(double dt0, int nelem, int ndegr, double* u){
 
 int main() {
     ///hardcoded inputs
-    int     nx = 750;           //Number of elements, nx+1 points
+    int     nx = 50;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
     int ndegr = 3;             //Degrees of freedom per element
     int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
+    int npoin = nx*ndegr;
 
     double cfl = 0.1/(ndegr*ndegr);          //CFL Number
 
@@ -86,6 +87,8 @@ int main() {
     auto* u0 = (double*)malloc(nu*sizeof(double));
     auto* dudt = (double*)malloc(nu*sizeof(double));
 
+    auto* u_tmp     = (double*)malloc(nu*sizeof(double));
+    auto* igr_sigma = (double*)malloc(npoin*sizeof(double));
 
     //Generate Grid (currently uniform) & initialize solution
     for (int i=0; i<nx; i++){
@@ -103,13 +106,13 @@ int main() {
                 //}
             //Initialize(x[i] + xi[j]*(0.5 * dx));  //will allow a slop initial cond.
             }
+            igr_sigma[iup(i,j,ndegr)] = 0.0;
         }
     }
 
     veccopy(u0,u,nu);
 
     // Begin Time Marching 
-    auto* u_tmp = (double*)malloc(nu*sizeof(double));
     
     double soltime = 0.0;
     
@@ -124,7 +127,7 @@ int main() {
 
         if (timestepping == EEULER) {
             //1st stage
-            CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
+            CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, igr_sigma, dudt);
             for (int i=0; i<nu; i++){
                 //u_tmp[i] += dt * dudt[i];
                 u[i] += dt * dudt[i];
@@ -141,7 +144,7 @@ int main() {
         if (timestepping == TVDRK3) {
             veccopy(u_tmp, u, nu);
             //1st stage
-            CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
+            CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, igr_sigma, dudt);
             for (int i=0; i<nu; i++){
                 u_tmp[i] += dt * dudt[i];
         
@@ -152,7 +155,7 @@ int main() {
             LimitSolution(nx, ndegr, nvar, u_tmp);
             }
             //2nd stage
-            CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
+            CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, igr_sigma, dudt);
             for (int i=0; i<nu; i++){
                 u_tmp[i] = 0.75*u[i] + 0.25*( u_tmp[i] + dt*dudt[i]);
             }
@@ -160,7 +163,7 @@ int main() {
             LimitSolution(nx, ndegr, nvar, u_tmp);
             }
             //3rd stage
-            CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, dudt);
+            CalcDudt(nx, ndegr, nvar, dx, u_tmp, Dmatrix, Dradau, igr_sigma, dudt);
             for (int i=0; i<nu; i++){
                 u[i] = (1.0/3.0)*u[i] + (2.0/3.0)*(u_tmp[i] + dt*dudt[i]);
             }
@@ -168,7 +171,7 @@ int main() {
             LimitSolution(nx, ndegr, nvar, u);
             }
         }
-
+        /*
         if (timestepping == SEMIIMP) {
             // Do regular explicit euler, but with implicit discontinuous flux
             CalcDudt(nx, ndegr, nvar, dx, u, Dmatrix, Dradau, dudt);
@@ -201,39 +204,9 @@ int main() {
             }
             LimitSolution(nx, ndegr, nvar, u);
         }
-
-        if (timestepping == -999) { //abandoned for now
-            // butcher tableau for the implicit method (kennedy DIRK methods for ode a review, 2016, p73)
-            // 0  |  0         0    0
-            // 2g |  g         g    0
-            // c3 |  c3-a32-g  a32  g
-            //       1-b2-b3   b2   b3
-            // What to do for explicit portion?? - need to adjust coeffs to maintain consistency or something like that
-            //
-            double g,c3,a32,b1,b2,b3,t2,t3;
-            g = (3.0 + sqrt(3.0)) / 6.0;
-            c3 = 1.0; // 1.0=stiffly accurate, 
-            // other options: internal stability:(3+sqrt(3))/3 - sqrt((2+sqrt(3))/3),  min error:(15+7sqrt(3))/(12(2+sqrt(3)))
-            a32 = c3*(c3-2*g)/(4*g);
-            b2 = (-2.0+3*c3)/(12*(c3-2*g)*g);
-            b3 = (1.0-3*g)/(3*c3*(c3-2*g));
-            b1 = 1.0 - b2 - b3;
-            //
-            // Algorithm Sketch fuly implicit ODE
-            // F1 = F[t0        , u0                                    ]
-            // F2 = F[t0 + 2g*dt, u0+dt*g*(F1 + F2)                     ]
-            // F3 = F[t0 + c3*dt, u0+dt*((c3-a32-g)*F1 + a32*F2 + g*F3) ]
-            // uout = u + dt*(b1*F1 + b2*F2 + b3*F3);
-            //
-            // Algorithm Sketch PDE with linear expansion of implicit terms
-            // FN = delta_u/(delta_t*??) <- cN or bN?
-            // F1 = F[t0        , u0                                    ]
-            // F2 = F[t0 + 2g*dt, u0+dt*g*(2*F1 + dF/du|1*delta_u|2)    ]
-            // F3 = F[t0 + c3*dt, u0+dt*((c3-a32-g)*F1 + a32*dFdu|1*delta_u|3+2 + g*dFdu|2*delta_u|3) ]
-            // uout = u + dt*(b1*F1 + b2*F2 + b3*F3);
-            //
-            
+        
         }
+        */
         
         if (nvar ==3) {
           if (iter % 1 == 0){printf("iter:%10d\tdt:%7.2e\t%7.2f%% Complete\n",iter, dt, 100.0*soltime/tmax);}
@@ -271,8 +244,9 @@ int main() {
 
                 double rho, v, p, c, M;
                 getPrimativesPN(gam, &u[iu3(i, j, 0, ndegr)], &rho, &v, &p, &c, &M);
+                double sig = igr_sigma[iup(i,j,ndegr)];
 
-                fprintf(fout, "%f\t%f\t%f\n", p, c, M);
+                fprintf(fout, "%f\t%f\t%f\t%f\n", p, c, M, sig);
             }
         }
     }
@@ -311,8 +285,9 @@ int main() {
 
                 double rho, v, p, c, M;
                 getPrimativesPN(gam, &u[iu3(i, j, 0, ndegr)], &rho, &v, &p, &c, &M);
+                double sig = igr_sigma[iup(i,j,ndegr)];
 
-                fprintf(fout, "%f\t%f\t%f\n", p, c, M);
+                fprintf(fout, "%f\t%f\t%f\t%f\n", p, c, M, sig);
             }
         }
     }

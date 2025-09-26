@@ -9,6 +9,7 @@
 
 #include "indexing.h"
 #include "EulerFlux.h"
+#include "igr.h"
 
 #define RHOLIMIT (1e-2)
 #define ELIMIT (1e-2)
@@ -30,8 +31,35 @@ double AdvectionFlux(const double a, const double u) {
     return a * u;
 }
 
+void StateDerivatives(const double dx, const int nx, const int np, const int ndegr, const int nvar, const double* u, const double* Dmatrix, double* du_dx) {
+    double uxi[nvar];
+    double gam = 1.4;
 
-void FluxFaceCorrection(int nx, int ndegr, int nvar, double* u, const double* Dradau, double* fcorr_xi, double* dudt){
+    //cell-internal components and calculating dudt
+    for (int ielem=0; ielem<nx; ielem++) {
+
+        //compute discontinuous solution slope (in reference element of width 2)
+        for (int inode = 0; inode < ndegr; inode++) {
+            for (int kvar = 0; kvar < nvar; kvar++) {
+                uxi[kvar] = 0.0;
+            }
+            //Use the Lagrange polynomial derivative matrix to perform the MatVec
+            for (int jnode = 0; jnode < ndegr; jnode++) {
+                for (int kvar = 0; kvar < nvar; kvar++) {
+                    uxi[kvar] += u[iu3(ielem, jnode , kvar, ndegr)] * Dmatrix[iup(inode, jnode, ndegr)];
+                }
+            }
+
+            // add the interior contribution to the flux slope
+            for (int kvar = 0; kvar < nvar; kvar++) {
+                du_dx[iu3(ielem, inode, kvar, ndegr)] += 2.0 * uxi[kvar] / dx;
+            }
+        }
+    }
+
+}
+
+void FluxFaceCorrection(int nx, int ndegr, int nvar, double* u, const double* Dradau, double* fcorr_xi, double* igr_sigma){
     double fL[nvar], fR[nvar], common_flux[nvar];
     double gam = 1.4;
 
@@ -48,19 +76,24 @@ void FluxFaceCorrection(int nx, int ndegr, int nvar, double* u, const double* Dr
             //Interior Cell
             iep1 = iface+1;
         }
+        //
+        double sigmaface[2];
+        sigmaface[0] = igr_sigma[iup(ielem,ndegr-1,ndegr)];
+        sigmaface[1] = igr_sigma[iup(iep1 ,0      ,ndegr)];
+
 
         //Calculate the common flux at the face
         if (nvar == 3){
             //LDFSS(gam, &u[iu3(ielem, ndegr-1, 0, ndegr)], &u[iu3(iep1, 0, 0, ndegr)], common_flux);
-            LeerFlux(gam, &u[iu3(ielem, ndegr-1, 0, ndegr)], &u[iu3(iep1, 0, 0, ndegr)], common_flux);
+            LeerFlux(gam, &u[iu3(ielem, ndegr-1, 0, ndegr)], &u[iu3(iep1, 0, 0, ndegr)], common_flux, sigmaface);
         }else{
             common_flux[0] = AdvectionFaceFlux(A, u[iu3(ielem, ndegr-1, 0, ndegr)], u[iu3(iep1, 0, 0, ndegr)]);
         }
 
         //Calculate the element's local fluxes at the face
         if (nvar == 3){
-            EulerFlux(gam,&u[iu3(ielem , ndegr-1 , 0, ndegr)], &fL[0]);
-            EulerFlux(gam,&u[iu3(iep1  , 0       , 0, ndegr)], &fR[0]);
+            EulerFlux(gam,&u[iu3(ielem , ndegr-1 , 0, ndegr)], &fL[0], sigmaface[0]);
+            EulerFlux(gam,&u[iu3(iep1  , 0       , 0, ndegr)], &fR[0], sigmaface[1]);
             //
             //LDFSS(gam, &u[iu3(ielem , ndegr-1 , 0, ndegr)], &u[iu3(ielem , ndegr-1 , 0, ndegr)], &fL[0]);
             //LDFSS(gam, &u[iu3(iep1  , 0       , 0, ndegr)], &u[iu3(iep1  , 0       , 0, ndegr)], &fR[0]);
@@ -80,7 +113,7 @@ void FluxFaceCorrection(int nx, int ndegr, int nvar, double* u, const double* Dr
     }
 }
 
-void DiscontinuousFlux(const int nx, const int np, const int ndegr, const int nvar, const double* u, const double* Dmatrix, double* fcorr_xi) {
+void DiscontinuousFlux(const int nx, const int np, const int ndegr, const int nvar, const double* u, const double* Dmatrix, double* fcorr_xi, double* igr_sigma) {
     double flux_node[np];
     double fxi[nvar];
     double gam = 1.4;
@@ -98,7 +131,8 @@ void DiscontinuousFlux(const int nx, const int np, const int ndegr, const int nv
 
             if (nvar == 3) {
                 double flux[nvar];
-                EulerFlux(gam,&u[iu3(ielem, inode, 0, ndegr)], &flux[0]);
+                double sig = igr_sigma[iup(ielem,inode,ndegr)];
+                EulerFlux(gam,&u[iu3(ielem, inode, 0, ndegr)], &flux[0], sig);
                 //
                 flux_node[iup(inode, 0, nvar)] = flux[0];
                 flux_node[iup(inode, 1, nvar)] = flux[1];
@@ -130,30 +164,35 @@ void DiscontinuousFlux(const int nx, const int np, const int ndegr, const int nv
 
 }
 
-void CalcDudt(const int nx, const int ndegr, const int nvar, const double dx, double* u, const double* Dmatrix, const double* Dradau, double* dudt ){
+void CalcDudt(const int nx, const int ndegr, const int nvar, const double dx, double* u, const double* Dmatrix, const double* Dradau, double* igr_sigma, double* dudt ){
     ///Calculates the solution update given a function to find flux
     int nu = nx * ndegr * nvar;
     int np = ndegr * nvar;
-    double fcorr_xi[nu], ucorr_xi[nu], ucorr_x[nu], ucx_xi[nu];
-
+    double fcorr_xi[nu], ucorr_xi[nu], ucorr_x[nu], u_x[nu];
+    
+    double alpha = ALPH * dx*dx;
 
     //Initialize dudt & corrected flux slope
     for (int i=0;i<nu; i++){
         dudt[i] = 0.0;
         fcorr_xi[i] = 0.0;
         ucorr_xi[i] = 0.0;
-        ucx_xi[i] = 0.0;
+        u_x[i] = 0.0;
     }
 
-    //Flux Reconstruction (P_ndegr)
-    FluxFaceCorrection(nx, ndegr, nvar, u, Dradau, fcorr_xi, dudt);
-    DiscontinuousFlux(nx, np, ndegr, nvar, u, Dmatrix, fcorr_xi);
+    //State Reconstruction
+    StateDerivatives(dx, nx, np, ndegr, nvar, u, Dmatrix, u_x);
+    CalculateIGRSigma(nx, ndegr, nvar, dx, alpha, Dmatrix, u, u_x, igr_sigma);
+
+    //Flux Reconstruction (P_ndegr) 
+    FluxFaceCorrection(nx, ndegr, nvar, u, Dradau, fcorr_xi, igr_sigma);
+    DiscontinuousFlux(nx, np, ndegr, nvar, u, Dmatrix, fcorr_xi, igr_sigma);
 
     for (int ielem=0; ielem<nx; ielem++) {
         for (int inode=0; inode<ndegr ;inode++) {
             for (int kvar = 0; kvar<nvar; kvar++) {
                 //convert from the reference element to the real element and negate to put make it dudt (= -f_x)
-                dudt[iu3(ielem, inode, kvar, ndegr)] += -(2/ dx) * (fcorr_xi[iu3(ielem,  inode, kvar, ndegr)]);
+                dudt[iu3(ielem, inode, kvar, ndegr)] += -(2.0/ dx) * (fcorr_xi[iu3(ielem,  inode, kvar, ndegr)]);
 
                /* //fix end points for shock-tube like problem
                if (ielem == 0 || ielem == nx-1){

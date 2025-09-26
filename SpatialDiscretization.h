@@ -14,7 +14,7 @@
 //#define FACEFLUX(a, b, c) AdvectionFaceFlux(a, b, c) //LeerFlux(GAM, a, b, c)
 //#define FLUX(a,b)  AdvectionFlux(a, b)  //EulerFlux(GAM, a, b)
 
-void CalcDudt(int nx, int ndegr, int nvar, double dx, double* u, const double* Dmatrix, const double* Dradau, double* dudt );
+void CalcDudt(int nx, int ndegr, int nvar, double dx, double* u, const double* Dmatrix, const double* Dradau, double *igr_sigma, double* dudt );
 void LimitSolution(int nelem, int ndegr, int nvar, double* u);
 
 #endif //FR1D_SPATIALDISCRETIZATION_H

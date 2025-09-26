@@ -40,23 +40,23 @@ void BuildJacobian(
             double df1du1, df2du1, df3du1, df1du2, df2du2, df3du2, df1du3, df2du3, df3du3;
             double flux[nvar], fluxp1[nvar], fluxp2[nvar], fluxp3[nvar];
             // Numerical difference to get flux derivative
-            EulerFlux(gam, uj, flux);
+            EulerFlux(gam, uj, flux, 0.0);
             //
             double utest[nvar];
             utest[0] = uj[0]*(1.0+1.0e-8);
             utest[1] = uj[1];
             utest[2] = uj[2];
-            EulerFlux(gam, utest, fluxp1);
+            EulerFlux(gam, utest, fluxp1, 0.0);
             //
             utest[0] = uj[0];
             utest[1] = uj[1]*(1.0+1.0e-8) + 1.0e-16;
             utest[2] = uj[2];
-            EulerFlux(gam, utest, fluxp2);
+            EulerFlux(gam, utest, fluxp2, 0.0);
             //
             utest[0] = uj[0];
             utest[1] = uj[1];
             utest[2] = uj[2]*(1.0+1.0e-8);
-            EulerFlux(gam, utest, fluxp3);
+            EulerFlux(gam, utest, fluxp3, 0.0);
             //
             df1du1 = (fluxp1[0]-flux[0])/(uj[0]*1.0e-8);
             df1du2 = (fluxp2[0]-flux[0])/(uj[1]*1.0e-8 + 1.0e-16);

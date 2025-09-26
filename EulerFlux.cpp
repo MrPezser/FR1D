@@ -33,13 +33,15 @@ void getPrimativesPN(const double gam, const double *unkel, double *rho, double 
     if (isnan(M[0])) {throw overflow_error("Nonpositive Density\n");}
 }
 
-void EulerFlux(double gam, const double *u, double* flux){
+void EulerFlux(double gam, const double *u, double *flux, double igr_sigma){
     flux[0] = 0.0;
     flux[1] = 0.0;
     flux[2] = 0.0;
 
     double rho, v, p, c, M;
     getPrimativesPN(gam, u, &rho, &v, &p, &c, &M);
+
+    p += igr_sigma;
 
     flux[0] = u[1];
     flux[1] = (u[1]*v) + p;
@@ -51,7 +53,7 @@ void EulerFlux(double gam, const double *u, double* flux){
 
 }
 //////////////////
-void LDFSS(double gam, const double* uL, const double* uR, double* flux) {
+void LDFSS(double gam, const double* uL, const double* uR, double* flux, double* igr_sigma) {
 
 //--------------------------------------------------------------------
 //----- inviscid flux contribution (LDFSS)
@@ -59,9 +61,11 @@ void LDFSS(double gam, const double* uL, const double* uR, double* flux) {
     //unk = [rho, u, T]
     double rhoL, vL, pL, cL, mL;
     getPrimativesPN(gam, uL, &rhoL, &vL, &pL, &cL, &mL);
+    pL += igr_sigma[0];
 
     double rhoR, vR, pR, cR, mR;
     getPrimativesPN(gam, uR, &rhoR, &vR, &pR, &cR, &mR);
+    pR += igr_sigma[1];
 
     double hL = (uL[2]+pL) / uL[0];
     double hR = (uR[2]+pR) / uR[0];
@@ -220,7 +224,7 @@ double F1pm(const int isPlus, const double M, const double rho, const double c){
     return NAN;
 }
 
-void LeerFlux(double gam, const double* uL, const double* uR, double *flux){
+void LeerFlux(double gam, const double* uL, const double* uR, double *flux, double* igr_sigma){
     double F1L, F1R, fPlus[3], fMins[3];
 
     flux[0] = 0.0;
@@ -229,19 +233,21 @@ void LeerFlux(double gam, const double* uL, const double* uR, double *flux){
 
     double rhoL, vL, pL, cL, ML;
     getPrimativesPN(gam, uL, &rhoL, &vL, &pL, &cL, &ML);
+    pL += igr_sigma[0];
 
     double rhoR, vR, pR, cR, MR;
     getPrimativesPN(gam, uR, &rhoR, &vR, &pR, &cR, &MR);
+    pR += igr_sigma[1];
 
     double MM = 0.5 * (ML + MR);
 
     if (MM >= 1.0){
-        EulerFlux(gam, uL, flux);
+        EulerFlux(gam, uL, flux, igr_sigma[0]);
         return;
     }
 
     if (MM <= -1.0){
-        EulerFlux(gam, uR, flux);
+        EulerFlux(gam, uR, flux, igr_sigma[1]);
         return;
     }
 
