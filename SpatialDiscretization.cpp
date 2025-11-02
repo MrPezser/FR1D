@@ -170,7 +170,7 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double dx, do
     int np = ndegr * nvar;
     double fcorr_xi[nu], ucorr_xi[nu], ucorr_x[nu], u_x[nu];
     
-    double alpha = ALPH * dx*dx;
+    double alpha = ALPH*dx*dx;
 
     //Initialize dudt & corrected flux slope
     for (int i=0;i<nu; i++){
@@ -182,7 +182,7 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double dx, do
 
     //State Reconstruction
     StateDerivatives(dx, nx, np, ndegr, nvar, u, Dmatrix, u_x);
-    CalculateIGRSigma(nx, ndegr, nvar, dx, alpha, Dmatrix, u, u_x, igr_sigma);
+    CalculateIGRSigma(nx, ndegr, nvar, dx, alpha, Dmatrix, Dradau, u, u_x, igr_sigma);
 
     //Flux Reconstruction (P_ndegr) 
     FluxFaceCorrection(nx, ndegr, nvar, u, Dradau, fcorr_xi, igr_sigma);

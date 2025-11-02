@@ -45,10 +45,10 @@ double dt_from_CFL(double dt0, int nelem, int ndegr, double* u){
 
 int main() {
     ///hardcoded inputs
-    int     nx = 50;           //Number of elements, nx+1 points
+    int     nx = 100;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int ndegr = 3;             //Degrees of freedom per element
+    int ndegr = 2;             //Degrees of freedom per element
     int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
     int npoin = nx*ndegr;
