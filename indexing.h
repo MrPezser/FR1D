@@ -9,7 +9,7 @@
 
 //indexing into state variable array u of degree nj for the jth node on the ith element
 //column major i guess
-#define NVAR 3
+#define NVAR 1
 #define ALPHA (0.05)
 #define ALPH (0.4)
 #define iu3(ielem, jdegr, kvar, ndegr) ((((ielem)*(ndegr)) + (jdegr))*NVAR + (kvar))

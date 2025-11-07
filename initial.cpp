@@ -2,6 +2,8 @@
 #include "SpatialDiscretization.h"
 #include <cmath>
 
+#define SIGWID (0.1)
+
 double sigmoid(double x0, double h, double w, double x){
     // returns the value of a sigmoid function at x 
     // centered around x0, with a height of h and width of w
@@ -22,13 +24,13 @@ double Initialize(double x){
         return 1.0 + exp(-(x-0.3)*(x-0.3) / beta);
     }
     if (x < 0.65) { // 0.6 to 0.65 = 1st sigmoid
-        return 1.0 + sigmoid(0.625, 1, 0.05, x);
+        return 1.0 + sigmoid(0.625, 1, SIGWID, x);
     } 
     if (x < 0.8) {
         return 2.0;
     }
     if (x < 0.85) {
-        return 1.0 + sigmoid(-0.825, 1, 0.05, -x);
+        return 1.0 + sigmoid(-0.825, 1, SIGWID, -x);
     }
     
     return 1.0;

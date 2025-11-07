@@ -69,9 +69,9 @@ void FluxFaceCorrection(int nx, int ndegr, int nvar, double* u, const double* Dr
         ielem = iface;
         if (iface == nx-1) {
             //extrapolation boundary condition
-            iep1 = iface;
+            //iep1 = iface;
             //periodic bc
-            //iep1 = 0;
+            iep1 = 0;
         } else {
             //Interior Cell
             iep1 = iface+1;
@@ -182,7 +182,7 @@ void CalcDudt(const int nx, const int ndegr, const int nvar, const double dx, do
 
     //State Reconstruction
     StateDerivatives(dx, nx, np, ndegr, nvar, u, Dmatrix, u_x);
-    CalculateIGRSigma(nx, ndegr, nvar, dx, alpha, Dmatrix, Dradau, u, u_x, igr_sigma);
+    //CalculateIGRSigma(nx, ndegr, nvar, dx, alpha, Dmatrix, Dradau, u, u_x, igr_sigma);
 
     //Flux Reconstruction (P_ndegr) 
     FluxFaceCorrection(nx, ndegr, nvar, u, Dradau, fcorr_xi, igr_sigma);

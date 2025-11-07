@@ -45,17 +45,17 @@ double dt_from_CFL(double dt0, int nelem, int ndegr, double* u){
 
 int main() {
     ///hardcoded inputs
-    int     nx = 100;           //Number of elements, nx+1 points
+    int     nx = 15;           //Number of elements, nx+1 points
     double  dx = 1.0 / nx;      //Implied domain from x=0 to x=1
 
-    int ndegr = 2;             //Degrees of freedom per element
+    int ndegr = 16;             //Degrees of freedom per element
     int nvar = NVAR;              //Number of variables
     int nu = nx * ndegr * nvar;
     int npoin = nx*ndegr;
 
     double cfl = 0.1/(ndegr*ndegr);          //CFL Number
 
-    double tmax = 0.2;
+    double tmax = 1.0;
     double dt = (cfl * dx); // /a;
     double dt0 = dt;
     int niter = ceil(tmax/dt);  //Guess number of iterations required to get to the given tmax //10*3*80
@@ -273,10 +273,10 @@ int main() {
                 if (ndegr == 1) {
                     double xii = -1.0 + 2.0 * j;
                     xj = x[i] + xii * (0.5 * dx);
-                    fprintf(fout, "%f\t%f\n", xj, u[iu3(i, 0, 0, ndegr)]);
+                    fprintf(fout, "%f\t%f\t%f\n", xj, u[iu3(i, 0, 0, ndegr)], u0[iu3(i, 0, 0, ndegr)]);
                 } else {
                     xj = x[i] + xi[j] * (0.5 * dx);
-                    fprintf(fout, "%f\t%f\n", xj, u[iu3(i, j, 0, ndegr)]);
+                    fprintf(fout, "%f\t%f\t%f\n", xj, u[iu3(i, j, 0, ndegr)], u0[iu3(i, j, 0, ndegr)]);
                 }
             } else {
                 xj = x[i] + xi[j] * (0.5 * dx);
